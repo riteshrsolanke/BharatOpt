@@ -24,8 +24,8 @@ RUN python scripts/generate_million_constraints.py data/million.dat
 RUN python scripts/generate_large_scale.py 20000 20000 0.005 data/bench_94_20k.dat
 RUN python scripts/generate_standard_benchmarks.py
 
-# Compile the C++ engine for Linux
-RUN cmake . && make
+# Compile the C++ engine for Linux (Out-of-source build required by Eigen)
+RUN mkdir build && cd build && cmake .. && make
 
 # Expose the port FastAPI runs on
 EXPOSE 8000
