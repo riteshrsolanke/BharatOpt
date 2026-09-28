@@ -701,7 +701,7 @@ let activeHardwareData = null;
 
 async function fetchHardwareInfo() {
     try {
-        const res = await fetch("http://localhost:8000/api/hardware");
+        const res = await fetch("/api/hardware");
         if (res.ok) {
             const data = await res.json();
             activeHardwareData = data;
@@ -858,7 +858,7 @@ async function smartConvertModel(solveImmediately) {
     if (mathBox) mathBox.innerHTML = '<div class="text-blue-600 font-mono"><i class="fas fa-spinner fa-spin mr-2"></i> Compiling canonical mathematical matrices...</div>';
 
     try {
-        const res = await fetch("http://localhost:8000/api/nlp/smart-convert-and-solve", {
+        const res = await fetch("/api/nlp/smart-convert-and-solve", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: text, solve_immediately: solveImmediately })
@@ -932,7 +932,7 @@ async function smartConvertModel(solveImmediately) {
         }
     } catch (e) {
         if (explainBox) explainBox.innerHTML = `<span class="text-red-600">Connection Error: ${e.message}</span>`;
-        if (mathBox) mathBox.textContent = "Check if BharatOpt-X server is running at http://localhost:8000.";
+        if (mathBox) mathBox.textContent = "Check if BharatOpt-X server is running.";
     }
 }
 
@@ -1131,7 +1131,7 @@ let bottleneckChartInstance = null;
 
 async function loadHistoricalTrends() {
     try {
-        const res = await fetch("http://localhost:8000/api/analytics/trends");
+        const res = await fetch("/api/analytics/trends");
         if (!res.ok) return;
         const data = await res.json();
 
@@ -1243,7 +1243,7 @@ async function loadConstraintOffset(offset) {
     tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i> Streaming constraint rows ${currentConstraintOffset.toLocaleString()} - ${(currentConstraintOffset + constraintPageSize).toLocaleString()} from 1,000,000 GPU model...</td></tr>`;
 
     try {
-        const res = await fetch(`http://localhost:8000/api/constraints/page?offset=${currentConstraintOffset}&limit=${constraintPageSize}`);
+        const res = await fetch(`/api/constraints/page?offset=${currentConstraintOffset}&limit=${constraintPageSize}`);
         if (res.ok) {
             const data = await res.json();
             if (summary) {
@@ -1485,7 +1485,7 @@ async function runOptimization() {
     if (currentMode === 'nlp') {
         const prompt = document.getElementById("promptInput").value.trim();
         if (!prompt) { alert("Please enter mathematical model text."); return; }
-        endpoint = 'http://localhost:8000/api/optimize/nlp';
+        endpoint = '/api/optimize/nlp';
         payload = { prompt: prompt };
     } else {
         const jsonText = document.getElementById("jsonInput").value.trim();
@@ -1499,7 +1499,7 @@ async function runOptimization() {
 
         // Only route to the 1M GPU benchmark if the 1M dataset is selected AND no explicit custom constraints are provided in editor
         if (isMegaModel && (!payload.constraints || payload.constraints.length === 0)) {
-            endpoint = 'http://localhost:8000/api/optimize/mega';
+            endpoint = '/api/optimize/mega';
             payload = {
                 num_constraints: 1000000,
                 num_vars: 2500,
@@ -1507,7 +1507,7 @@ async function runOptimization() {
             };
         } else {
             isMegaModel = false;
-            endpoint = 'http://localhost:8000/api/optimize/json';
+            endpoint = '/api/optimize/json';
         }
     }
 
@@ -1576,7 +1576,7 @@ async function runOptimization() {
             aiBox.innerHTML = `<div class="p-3 text-red-600 bg-red-50 rounded border border-red-200">Execution Error: ${data.detail || "Check problem formulation."}</div>`;
         }
     } catch (err) {
-        engineOutput.textContent = `Connection Failed: ${err.message}\nMake sure BharatOpt-X server is running at http://localhost:8000.`;
+        engineOutput.textContent = `Connection Failed: ${err.message}\nMake sure BharatOpt-X server is running.`;
         aiBox.innerHTML = `<div class="p-3 text-red-600 bg-red-50 rounded border border-red-200">Could not connect to backend server.</div>`;
     } finally {
         btn.disabled = false;
@@ -1745,7 +1745,7 @@ async function askSahayak() {
             duals: lastSolutionData?.duals || {}
         };
 
-        const res = await fetch("http://localhost:8000/api/ai/query", {
+        const res = await fetch("/api/ai/query", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
