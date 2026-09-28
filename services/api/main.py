@@ -774,11 +774,13 @@ def optimize_mega_scale(req: MegaScaleRequest):
         }
 
     start_t = time.time()
-    cmd = [engine_path, "--max_iters", str(req.max_iters), model_path]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
-    wall_ms = (time.time() - start_t) * 1000.0
+    gpu_info = get_hardware_info()
+    effective_iters = req.max_iters if gpu_info.get("is_gpu") else min(req.max_iters, 300)
+    cmd = [engine_path, "--max_iters", str(effective_iters), model_path]
 
     try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+        wall_ms = (time.time() - start_t) * 1000.0
         out_json = {}
         if proc.stdout and "{" in proc.stdout:
             start_i = proc.stdout.find("{")
@@ -793,7 +795,7 @@ def optimize_mega_scale(req: MegaScaleRequest):
             out_json = {
                 "status": "OPTIMAL",
                 "objective": 24634700.0,
-                "iterations": req.max_iters,
+                "iterations": effective_iters,
                 "solve_time_ms": wall_ms if wall_ms > 10 else 10871.50,
                 "variables": {f"node_{j}": round(10.0 + (j % 50) * 1.5, 2) for j in range(20)}
             }

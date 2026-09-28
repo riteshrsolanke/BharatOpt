@@ -33,6 +33,9 @@ if not exist "bharatopt_engine.exe" (
     )
 )
 
+:: Free port 8000 if an older server is already running
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8000 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
+
 echo [3/3] Launching BharatOpt-X Core Engine ^& AI Sidecar...
 echo.
 echo ==========================================================
