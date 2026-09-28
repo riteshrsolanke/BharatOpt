@@ -21,6 +21,18 @@ if %errorlevel% neq 0 (
     echo [WARNING] Failed to install some dependencies. The server might still run if already installed.
 )
 
+:: Check if C++ engine is built, if not try to build it
+if not exist "bharatopt_engine.exe" (
+    if not exist "build\bharatopt_engine.exe" (
+        where cmake >nul 2>&1
+        if %errorlevel% equ 0 (
+            echo [AUTO-BUILD] Compiling native C++ engine...
+            cmake -B build -DCMAKE_BUILD_TYPE=Release >nul 2>&1
+            cmake --build build --config Release >nul 2>&1
+        )
+    )
+)
+
 echo [3/3] Launching BharatOpt-X Core Engine ^& AI Sidecar...
 echo.
 echo ==========================================================
