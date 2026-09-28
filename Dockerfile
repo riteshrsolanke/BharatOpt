@@ -17,6 +17,11 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Generate large scale datasets on the fly (since we excluded them from Git to save space)
+RUN python scripts/generate_million_constraints.py data/million.dat
+RUN python scripts/generate_large_scale.py 20000 20000 0.005 data/bench_94_20k.dat
+RUN python scripts/generate_standard_benchmarks.py
+
 # Compile the C++ engine for Linux
 RUN cmake . && make
 
