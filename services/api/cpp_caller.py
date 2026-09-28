@@ -138,7 +138,6 @@ def write_dat_and_run_cpp(obj_terms, constraints, sense, workspace_root, model_t
     candidates = [
         os.path.join(workspace_root, 'bharatopt_engine.exe'),
         os.path.join(workspace_root, 'build', 'bharatopt_engine.exe'),
-        os.path.join(workspace_root, 'bharatopt_engine_gpu.exe'),
         os.path.join(workspace_root, 'build', 'Release', 'bharatopt_engine.exe'),
         os.path.join(workspace_root, 'build', 'Debug', 'bharatopt_engine.exe'),
         os.path.join(workspace_root, 'bharatopt_engine'),
