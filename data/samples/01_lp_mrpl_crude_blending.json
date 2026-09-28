@@ -1,0 +1,119 @@
+{
+  "name": "MRPL_Crude_Blending_LP",
+  "description": "MRPL CDU Crude Blending — 4 crude shipments, sulfur + API gravity + yield constraints, product demand, real units",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "ArabLight": 4200.0,
+      "Brent": 5100.0,
+      "Maya": 2800.0,
+      "Murban": 4750.0
+    },
+    "unit": "INR/kL processed"
+  },
+  "constraints": [
+    {
+      "name": "CDU_Capacity",
+      "rel": "<=",
+      "rhs": 12000.0,
+      "terms": { "ArabLight": 1.0, "Brent": 1.0, "Maya": 1.0, "Murban": 1.0 },
+      "unit": "kL/day",
+      "description": "Total crude distillation unit throughput cap"
+    },
+    {
+      "name": "ArabLight_Ship",
+      "rel": "<=",
+      "rhs": 4500.0,
+      "terms": { "ArabLight": 1.0 },
+      "unit": "kL",
+      "description": "Available Arab Light crude from current shipment"
+    },
+    {
+      "name": "Brent_Ship",
+      "rel": "<=",
+      "rhs": 3500.0,
+      "terms": { "Brent": 1.0 },
+      "unit": "kL",
+      "description": "Available Brent crude from current shipment"
+    },
+    {
+      "name": "Maya_Ship",
+      "rel": "<=",
+      "rhs": 3000.0,
+      "terms": { "Maya": 1.0 },
+      "unit": "kL",
+      "description": "Available Maya Heavy crude from current shipment"
+    },
+    {
+      "name": "Murban_Ship",
+      "rel": "<=",
+      "rhs": 4000.0,
+      "terms": { "Murban": 1.0 },
+      "unit": "kL",
+      "description": "Available Murban crude from current shipment"
+    },
+    {
+      "name": "Blend_Sulfur_Max",
+      "rel": "<=",
+      "rhs": 2400.0,
+      "terms": { "ArabLight": 0.18, "Brent": 0.12, "Maya": 0.38, "Murban": 0.08 },
+      "unit": "kg/day (blend avg. <= 0.2 wt%)",
+      "description": "Max blended sulfur to meet CDU + downstream desulfurization limits"
+    },
+    {
+      "name": "Blend_API_Min",
+      "rel": ">=",
+      "rhs": 348000.0,
+      "terms": { "ArabLight": 32.0, "Brent": 38.0, "Maya": 22.0, "Murban": 40.0 },
+      "unit": "API-deg * kL (avg. API >= 29 deg)",
+      "description": "Minimum API gravity for CDU feed: lighter crude preferred for naphtha yield"
+    },
+    {
+      "name": "Gasoline_Demand",
+      "rel": ">=",
+      "rhs": 2400.0,
+      "terms": { "ArabLight": 0.28, "Brent": 0.35, "Maya": 0.15, "Murban": 0.36 },
+      "unit": "kL/day gasoline yield",
+      "description": "Minimum petrol (naphtha + reformate) demand commitment"
+    },
+    {
+      "name": "Diesel_Demand",
+      "rel": ">=",
+      "rhs": 3600.0,
+      "terms": { "ArabLight": 0.32, "Brent": 0.30, "Maya": 0.28, "Murban": 0.30 },
+      "unit": "kL/day diesel yield",
+      "description": "Minimum HSD demand from CDU atmospheric distillation"
+    },
+    {
+      "name": "Residue_Cap",
+      "rel": "<=",
+      "rhs": 4200.0,
+      "terms": { "ArabLight": 0.35, "Brent": 0.22, "Maya": 0.52, "Murban": 0.20 },
+      "unit": "kL/day atmospheric residue",
+      "description": "Vacuum unit and coker capacity ceiling"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "Normal",
+      "description": "Baseline CDU capacity 12,000 kL/day, standard crude mix"
+    },
+    {
+      "name": "High_Sulfur",
+      "description": "Replace Brent with Maya to test sulfur constraint tightness"
+    },
+    {
+      "name": "CDU_Constrained",
+      "description": "CDU_Capacity reduced to 9,000 kL/day — one train offline"
+    }
+  ],
+  "expected_solution": {
+    "note": "Solved by Native BharatOpt-X Two-Phase Simplex",
+    "ArabLight": 4500.0,
+    "Brent": 3500.0,
+    "Maya": 0.0,
+    "Murban": 4000.0,
+    "objective_approx": 55750000.0,
+    "binding_constraints": ["CDU_Capacity", "ArabLight_Ship", "Brent_Ship", "Murban_Ship"]
+  }
+}

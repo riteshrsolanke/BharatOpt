@@ -1,0 +1,50 @@
+{
+  "name": "MRPL_Decentralized_Refinery_ADMM",
+  "engine": "ADMM_DISTRIBUTED_CONSENSUS",
+  "type": "NLP_ADMM",
+  "description": "Multi-unit decomposition: Crude Distillation Unit (CDU), Fluid Catalytic Cracker (FCC), and Hydrocracker coupled via shared hydrogen and steam networks.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "CDU_Naphtha_Feed": 42.0,
+      "FCC_Gasoline_Blend": 68.5,
+      "Hydrocracker_Diesel_Export": 74.0,
+      "Petchem_Propylene_Grade": 95.0
+    }
+  },
+  "constraints": [
+    {
+      "name": "Hydrogen_Grid_Consensus_Coupling",
+      "rel": "<=",
+      "rhs": 1850.0,
+      "terms": {
+        "CDU_Naphtha_Feed": 0.8,
+        "FCC_Gasoline_Blend": 1.4,
+        "Hydrocracker_Diesel_Export": 3.8,
+        "Petchem_Propylene_Grade": 2.1
+      }
+    },
+    {
+      "name": "High_Pressure_Steam_Balance",
+      "rel": "<=",
+      "rhs": 2400.0,
+      "terms": {
+        "CDU_Naphtha_Feed": 1.5,
+        "FCC_Gasoline_Blend": 2.2,
+        "Hydrocracker_Diesel_Export": 2.9,
+        "Petchem_Propylene_Grade": 1.2
+      }
+    },
+    {
+      "name": "Sulfur_Emission_Cap_Norms",
+      "rel": "<=",
+      "rhs": 480.0,
+      "terms": {
+        "CDU_Naphtha_Feed": 0.15,
+        "FCC_Gasoline_Blend": 0.45,
+        "Hydrocracker_Diesel_Export": 0.20,
+        "Petchem_Propylene_Grade": 0.10
+      }
+    }
+  ]
+}

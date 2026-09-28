@@ -1,0 +1,61 @@
+{
+  "name": "MRPL_Crude_Oil_Blending_LP",
+  "engine": "LP_SIMPLEX_IPM",
+  "type": "LP",
+  "description": "Mangalore Refinery Crude Distillation Unit (CDU) crude selection and product fraction optimization.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "Arab_Light_bbl": 24.50,
+      "Brent_Blend_bbl": 31.20,
+      "Maya_Heavy_bbl": 18.75,
+      "Bonny_Light_bbl": 28.60
+    }
+  },
+  "constraints": [
+    {
+      "name": "CDU_Total_Throughput_Limit",
+      "rel": "<=",
+      "rhs": 150000.0,
+      "terms": {
+        "Arab_Light_bbl": 1.0,
+        "Brent_Blend_bbl": 1.0,
+        "Maya_Heavy_bbl": 1.0,
+        "Bonny_Light_bbl": 1.0
+      }
+    },
+    {
+      "name": "Max_Desulfurization_Capacity",
+      "rel": "<=",
+      "rhs": 220000.0,
+      "terms": {
+        "Arab_Light_bbl": 1.8,
+        "Brent_Blend_bbl": 0.9,
+        "Maya_Heavy_bbl": 3.4,
+        "Bonny_Light_bbl": 0.4
+      }
+    },
+    {
+      "name": "Min_High_Octane_Gasoline_Yield",
+      "rel": ">=",
+      "rhs": 35000.0,
+      "terms": {
+        "Arab_Light_bbl": 0.28,
+        "Brent_Blend_bbl": 0.35,
+        "Maya_Heavy_bbl": 0.15,
+        "Bonny_Light_bbl": 0.32
+      }
+    },
+    {
+      "name": "Heavy_Fuel_Oil_Slurry_Limit",
+      "rel": "<=",
+      "rhs": 25000.0,
+      "terms": {
+        "Arab_Light_bbl": 0.12,
+        "Brent_Blend_bbl": 0.08,
+        "Maya_Heavy_bbl": 0.38,
+        "Bonny_Light_bbl": 0.05
+      }
+    }
+  ]
+}

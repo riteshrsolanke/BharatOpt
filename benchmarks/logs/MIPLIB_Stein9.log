@@ -1,0 +1,66 @@
+Benchmark: MIPLIB_Stein9
+File: data/bench_miplib_stein9.dat
+Hardware CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+Hardware GPU: NVIDIA CUDA GPU (cuSPARSE Accelerated)
+============================================================
+RAW STDOUT:
+============================================================
+{
+  "status": "OPTIMAL",
+  "objective": 4,
+  "certificate": {"type": "MIP_Integer_Feasibility_Witness", "bb_nodes": 13},
+  "iterations": 20,
+  "solve_time_ms": 6455.4,
+  "num_vars": 9,
+  "num_constraints": 13,
+  "nnz": 39,
+  "bb_nodes": 13,
+  "cuts_applied": 0,
+  "primal_residual": 0,
+  "dual_residual": 1,
+  "duality_gap": 0,
+  "backend": "CPU_BranchAndBound",
+  "gpu": "None (CPU Execution)",
+  "gpu_time_ms": 0,
+  "slacks": {
+    "cov_1": 1,
+    "cov_2": 0,
+    "cov_3": 0,
+    "cov_4": 0,
+    "cov_5": 0,
+    "cov_6": 1,
+    "cov_7": 0,
+    "cov_8": 0,
+    "cov_9": 0,
+    "cov_10": 1,
+    "cov_11": 0,
+    "cov_12": 0,
+    "cov_13": 2
+  },
+  "duals": {
+    "cov_1": 0,
+    "cov_2": 0,
+    "cov_3": 1,
+    "cov_4": 1,
+    "cov_5": 0,
+    "cov_6": 0,
+    "cov_7": 0,
+    "cov_8": 0,
+    "cov_9": 1,
+    "cov_10": 0,
+    "cov_11": 1,
+    "cov_12": 0,
+    "cov_13": 0
+  },
+  "variables": {
+    "x1": 1,
+    "x2": 0,
+    "x3": 1,
+    "x4": 0,
+    "x5": 0,
+    "x6": 1,
+    "x7": 0,
+    "x8": 1,
+    "x9": 0
+  }
+}

@@ -1,0 +1,38 @@
+@echo off
+setlocal
+TITLE BharatOpt-X: Sovereign GPU-Accelerated Optimization Engine
+
+echo ==========================================================
+echo       BHARATOPT-X - SMART INDIA HACKATHON 2026
+echo             TEAM NEXORA - PS ID: SIH26119
+echo ==========================================================
+echo.
+echo [1/3] Checking dependencies...
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] Python is not installed or not in PATH! Please install Python 3.10+
+    pause
+    exit /b
+)
+
+echo [2/3] Installing/Verifying Python requirements...
+pip install -r requirements.txt -q
+if %errorlevel% neq 0 (
+    echo [WARNING] Failed to install some dependencies. The server might still run if already installed.
+)
+
+echo [3/3] Launching BharatOpt-X Core Engine ^& AI Sidecar...
+echo.
+echo ==========================================================
+echo The Dashboard will open at: http://localhost:8000
+echo Leave this terminal open. Press Ctrl+C to stop the server.
+echo ==========================================================
+echo.
+
+:: Give the server 2 seconds to start, then open the browser
+start "" http://localhost:8000
+
+:: Start the FastAPI server
+python services/api/main.py
+
+pause

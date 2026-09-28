@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BharatOpt Optimization Studio | Sovereign C++23 Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js for Interactive Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .terminal-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .terminal-scroll::-webkit-scrollbar-track { background: #F3F4F6; }
+        .terminal-scroll::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 4px; }
+        .bg-ide-gray { background-color: #F8F9FA; }
+        .border-ide { border-color: #DEE2E6; }
+        .text-ide-blue { color: #0D6EFD; }
+        .bg-ide-blue { background-color: #0D6EFD; }
+        .dropdown-menu { display: none; }
+        .dropdown-menu.active { display: block; }
+        textarea, input { user-select: text !important; -webkit-user-select: text !important; cursor: text !important; }
+    </style>
+</head>
+<body class="h-screen flex flex-col bg-white text-gray-800 text-sm overflow-hidden">
+
+    <!-- Top Menu Bar -->
+    <header class="flex items-center justify-between px-3 py-1 bg-white border-b border-ide z-50 relative">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center text-ide-blue font-bold tracking-tight text-base cursor-pointer" onclick="openHelpModal()">
+                <i class="fas fa-layer-group mr-2 text-indigo-600"></i> BharatOpt Optimization Studio
+                <span class="ml-2 text-[10px] bg-indigo-100 text-indigo-800 font-semibold px-1.5 py-0.5 rounded">v2.4 Sovereign</span>
+            </div>
+            <nav class="flex space-x-1 text-gray-700 text-xs">
+                <!-- File Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-file')">
+                        <span>File</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-file" class="dropdown-menu absolute left-0 mt-1 w-56 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="menuNewModel()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-file mr-2 text-gray-400"></i> New Blank Model <span class="ml-auto text-gray-400 text-[10px]">Ctrl+N</span></a>
+                        <label class="flex items-center px-3 py-1.5 hover:bg-gray-100 cursor-pointer">
+                            <i class="fas fa-folder-open mr-2 text-yellow-500"></i> Open Local File...
+                            <input type="file" id="fileUploadInput" accept=".json,.mps,.mod" class="hidden" onchange="handleFileUpload(event)">
+                        </label>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <div class="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase">Load Engine Samples</div>
+                        <a href="javascript:void(0)" onclick="loadDataset('crude_lp')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-gas-pump mr-2 text-blue-500"></i> 1. LP Crude Blending</a>
+                        <a href="javascript:void(0)" onclick="loadDataset('electronics_milp')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-microchip mr-2 text-purple-500"></i> 2. MILP Electronics Plan</a>
+                        <a href="javascript:void(0)" onclick="loadDataset('portfolio_qp')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-chart-line mr-2 text-green-500"></i> 3. QP Energy Portfolio</a>
+                        <a href="javascript:void(0)" onclick="loadDataset('refinery_admm')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-network-wired mr-2 text-orange-500"></i> 4. ADMM Refinery Network</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="javascript:void(0)" onclick="exportModelJSON()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-download mr-2 text-gray-500"></i> Export Model (JSON)</a>
+                        <a href="javascript:void(0)" onclick="exportModelMPS()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-file-code mr-2 text-gray-500"></i> Export MPS Formulation</a>
+                        <a href="javascript:void(0)" onclick="exportSolutionReport()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-file-invoice mr-2 text-green-600"></i> Download Full Report (.txt)</a>
+                    </div>
+                </div>
+
+                <!-- Edit Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-edit')">
+                        <span>Edit</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-edit" class="dropdown-menu absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="formatJSON()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-magic mr-2 text-indigo-500"></i> Format / Prettify JSON</a>
+                        <a href="javascript:void(0)" onclick="clearEditor()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-eraser mr-2 text-red-400"></i> Clear Workspace</a>
+                        <a href="javascript:void(0)" onclick="copyTerminalOutput()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-copy mr-2 text-gray-500"></i> Copy Console Logs</a>
+                    </div>
+                </div>
+
+                <!-- Solver Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-solver')">
+                        <span>Solver</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-solver" class="dropdown-menu absolute left-0 mt-1 w-72 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="selectAlgorithm('auto')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-brain mr-2 text-blue-500"></i> Auto-Detect & Route (Router)</a>
+                        <a href="javascript:void(0)" onclick="selectAlgorithm('simplex')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-square-root-variable mr-2 text-green-500"></i> LP: Two-Phase Simplex <span class="ml-auto text-[9px] bg-green-100 text-green-700 px-1 rounded">PRODUCTION</span></a>
+                        <a href="javascript:void(0)" onclick="selectAlgorithm('bb')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-code-branch mr-2 text-purple-500"></i> MILP: Branch & Bound <span class="ml-auto text-[9px] bg-yellow-100 text-yellow-700 px-1 rounded">ROADMAP</span></a>
+                        <a href="javascript:void(0)" onclick="selectAlgorithm('ipm')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-circle-dot mr-2 text-teal-500"></i> QP: Primal-Dual IPM <span class="ml-auto text-[9px] bg-yellow-100 text-yellow-700 px-1 rounded">ROADMAP</span></a>
+                        <a href="javascript:void(0)" onclick="selectAlgorithm('admm')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-network-wired mr-2 text-orange-500"></i> ADMM: Distributed <span class="ml-auto text-[9px] bg-yellow-100 text-yellow-700 px-1 rounded">ROADMAP</span></a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="javascript:void(0)" onclick="setTolerancePrompt()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-sliders mr-2 text-gray-500"></i> Set Optimality Tolerance (1e-8)</a>
+                    </div>
+                </div>
+
+                <!-- Hardware Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-hardware')">
+                        <span>Hardware</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-hardware" class="dropdown-menu absolute left-0 mt-1 w-64 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="selectHardware('cuda')" class="flex items-center px-3 py-1.5 hover:bg-gray-100 font-semibold text-green-700"><i class="fas fa-microchip mr-2 text-green-600"></i> NVIDIA CUDA (cuSPARSE/cuBLAS)</a>
+                        <a href="javascript:void(0)" onclick="selectHardware('cpu')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-server mr-2 text-blue-600"></i> CPU Multi-Core OpenMP (AVX-512)</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="javascript:void(0)" onclick="switchConsole('gpu')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-gauge-high mr-2 text-indigo-500"></i> Open Live GPU Profiler</a>
+                    </div>
+                </div>
+
+                <!-- View Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-view')">
+                        <span>View</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-view" class="dropdown-menu absolute left-0 mt-1 w-52 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="switchConsole('visualizer')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-chart-pie mr-2 text-indigo-500"></i> Interactive Visual Charts</a>
+                        <a href="javascript:void(0)" onclick="switchConsole('bb')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-sitemap mr-2 text-purple-500"></i> Branch & Bound Tree</a>
+                        <a href="javascript:void(0)" onclick="switchConsole('simplex')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-table mr-2 text-orange-500"></i> Simplex Pivot Tableau</a>
+                        <a href="javascript:void(0)" onclick="switchConsole('log')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-terminal mr-2 text-gray-600"></i> C++ Engine Console</a>
+                    </div>
+                </div>
+
+                <!-- Help Menu -->
+                <div class="relative">
+                    <button class="hover:bg-gray-100 px-2.5 py-1 rounded transition flex items-center space-x-1" onclick="toggleMenu('menu-help')">
+                        <span>Help</span> <i class="fas fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div id="menu-help" class="dropdown-menu absolute left-0 mt-1 w-64 bg-white border border-gray-200 rounded shadow-lg py-1 z-50 text-xs">
+                        <a href="javascript:void(0)" onclick="openHelpModal()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-book-open mr-2 text-blue-500"></i> Architecture & Solver Guide</a>
+                        <a href="/api/download-handbook" target="_blank" class="flex items-center px-3 py-1.5 hover:bg-gray-100 font-semibold text-purple-700"><i class="fas fa-file-pdf mr-2 text-red-500"></i> Download PDF Handbook & Glossary</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="javascript:void(0)" onclick="alert('BharatOpt-X is a clean-room sovereign optimization solver developed for MRPL & SIH 2026.')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-info-circle mr-2 text-gray-500"></i> About BharatOpt-X</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <div class="text-[11px] text-gray-500 flex items-center space-x-3">
+            <span>Mangalore Refinery (MRPL) | Smart India Hackathon</span>
+            <span class="text-green-600 font-semibold"><i class="fas fa-shield-alt mr-1"></i>100% Sovereign (Clean-Room)</span>
+        </div>
+    </header>
+
+    <!-- Toolbar / Ribbon -->
+    <div class="flex items-center justify-between px-3 py-2 bg-ide-gray border-b border-ide z-40">
+        <div class="flex items-center space-x-2">
+            <button onclick="runOptimization()" id="optimizeBtn" class="bg-ide-blue hover:bg-blue-700 text-white px-3.5 py-1.5 rounded shadow-sm flex items-center space-x-2 text-xs font-semibold transition active:scale-95">
+                <i class="fas fa-play"></i> <span>Solve Model</span>
+            </button>
+            <button onclick="menuNewModel()" class="bg-white border border-ide hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded shadow-sm flex items-center space-x-2 text-xs font-medium transition">
+                <i class="fas fa-file-medical text-blue-500"></i> <span>New Model</span>
+            </button>
+            <button onclick="triggerSahayakFocus()" class="bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 px-3 py-1.5 rounded shadow-sm flex items-center space-x-2 text-xs font-medium transition ml-2">
+                <i class="fas fa-wand-magic-sparkles text-purple-600"></i> <span>BharatOpt Sahayak (AI)</span>
+            </button>
+            
+            <div class="h-4 border-l border-gray-300 mx-2"></div>
+            
+            <!-- Algorithm Selector -->
+            <select id="algoSelect" onchange="handleAlgoChange()" class="border border-ide rounded px-2.5 py-1 text-xs bg-white text-gray-700 font-medium cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="auto">Solver-Agnostic Router (Auto-Select)</option>
+                <option value="lp_simplex">LP: Revised Simplex (Two-Phase)</option>
+                <option value="milp_bb">MILP: GNN-assisted branching research prototype</option>
+                <option value="qp_ipm">QP: Adaptive Primal-Dual (PDHG)</option>
+                <option value="miqp">MIQP: Mixed-Integer Quadratic Programming</option>
+                <option value="admm">ADMM: Distributed Consensus Network</option>
+            </select>
+
+            <!-- Hardware Backend Selector -->
+            <select id="hardwareSelect" onchange="handleHardwareChange()" class="border border-ide rounded px-2.5 py-1 text-xs bg-white text-gray-700 font-medium cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="cuda">CUDA GPU: Sparse LA (cuSPARSE + cuBLAS)</option>
+                <option value="cpu">CPU: Multi-Threaded OpenMP (AVX-512)</option>
+            </select>
+
+            <label class="flex items-center space-x-1.5 text-xs text-gray-700 ml-2 cursor-pointer">
+                <input type="checkbox" id="presolveCheck" checked class="rounded border-gray-300 text-ide-blue focus:ring-ide-blue cursor-pointer">
+                <span>Presolve</span>
+            </label>
+        </div>
+        
+        <div class="flex items-center space-x-2">
+            <!-- GPU Solve Time Live Box -->
+            <div id="gpuSolveBox" class="flex items-center space-x-2 bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1 rounded-full shadow-xs text-xs font-mono">
+                <i class="fas fa-bolt text-amber-500 animate-pulse"></i>
+                <span class="text-[11px] font-sans font-bold text-gray-700">GPU Solve Time:</span>
+                <span id="gpuSolveTimeDisplay" class="font-black text-emerald-700 text-xs">READY (0.0 ms)</span>
+                <span id="gpuThroughputDisplay" class="text-[9px] text-emerald-700 bg-emerald-100/90 border border-emerald-300 px-1.5 py-0.2 rounded font-mono font-bold">cuSPARSE</span>
+            </div>
+
+            <!-- Hardware Badge (Dynamic) -->
+            <div id="hardwareBadge" class="flex items-center bg-green-50 border border-green-200 text-green-700 px-3 py-1 rounded-full text-xs shadow-sm space-x-2 cursor-pointer transition hover:bg-green-100" onclick="switchConsole('gpu')" title="Click to view Hardware Profiler">
+                <div id="hardwareBadgeDot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span id="hardwareBadgeText" class="font-medium tracking-tight">Detecting Hardware Accelerator...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Left Sidebar (Projects & Properties) -->
+        <div class="w-64 flex flex-col border-r border-ide bg-ide-gray shrink-0">
+            
+            <!-- Projects Tree -->
+            <div class="flex-1 flex flex-col border-b border-ide overflow-hidden">
+                <div class="px-3 py-2 font-semibold text-xs text-gray-500 tracking-wider flex items-center justify-between border-b border-gray-200 bg-white">
+                    <div class="flex items-center space-x-2">
+                        <i class="far fa-folder-open text-blue-500"></i> <span>OPTIMIZATION SUITE</span>
+                    </div>
+                    <span class="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-mono">4 Engines</span>
+                </div>
+                <div class="flex-1 overflow-y-auto px-2 py-2">
+                    <ul class="text-xs space-y-1">
+                        <li class="font-semibold text-gray-700 px-2 py-1 text-[11px] uppercase tracking-wider text-gray-400">
+                            Available Benchmark Models
+                        </li>
+                        
+                        <!-- Benchmark Scaler Dropdown -->
+                        <div class="px-2 py-1 bg-blue-50/80 border border-blue-200 rounded my-1 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-blue-900 flex items-center"><i class="fas fa-sliders mr-1 text-blue-600"></i> Scale:</span>
+                            <select id="benchmarkScaleSelect" onchange="scaleCurrentBenchmark(this.value)" class="text-[10px] bg-white border border-blue-300 rounded px-1.5 py-0.5 font-bold text-blue-800 cursor-pointer focus:outline-none">
+                                <option value="1">Standard Size</option>
+                                <option value="10000">10K Constraints</option>
+                                <option value="100000">100K Constraints</option>
+                                <option value="1000000">1,000,000 (Megascale GPU)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Sample 1: LP -->
+                        <li id="file-crude_lp" onclick="loadDataset('crude_lp')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-blue-50 cursor-pointer border border-transparent hover:border-blue-200 transition">
+                            <i class="fas fa-gas-pump text-blue-500 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-medium text-gray-800">01_lp_crude_blending</div>
+                                <div class="text-[10px] text-gray-400">MRPL Refinery (LP / Simplex)</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 2: MILP -->
+                        <li id="file-electronics_milp" onclick="loadDataset('electronics_milp')" class="flex items-center space-x-2 py-1.5 px-2 rounded bg-blue-100 text-blue-800 font-medium border border-blue-300 cursor-pointer transition">
+                            <i class="fas fa-microchip text-purple-600 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-semibold text-blue-900">02_milp_electronics</div>
+                                <div class="text-[10px] text-blue-700">Production Plan (GNN-assisted branching)</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 3: QP -->
+                        <li id="file-portfolio_qp" onclick="loadDataset('portfolio_qp')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-blue-50 cursor-pointer border border-transparent hover:border-blue-200 transition">
+                            <i class="fas fa-chart-line text-green-600 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-medium text-gray-800">03_qp_portfolio_risk</div>
+                                <div class="text-[10px] text-gray-400">Markowitz Asset (Convex QP)</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 4: ADMM -->
+                        <li id="file-refinery_admm" onclick="loadDataset('refinery_admm')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-blue-50 cursor-pointer border border-transparent hover:border-blue-200 transition">
+                            <i class="fas fa-network-wired text-orange-500 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-medium text-gray-800">04_admm_refinery</div>
+                                <div class="text-[10px] text-gray-400">Decentralized Multi-Unit</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 5: 5-City Multimodal Freight -->
+                        <li id="file-national_logistics_5cities" onclick="loadDataset('national_logistics_5cities')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-blue-50 cursor-pointer border border-transparent hover:border-blue-200 transition">
+                            <i class="fas fa-truck-fast text-blue-600 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-medium text-gray-800">05_national_logistics</div>
+                                <div class="text-[10px] text-gray-400">5-City Multimodal Corridor (Exact LP)</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 6: Mega LP (1M Constraints) -->
+                        <li id="file-mega_logistics_1m" onclick="loadDataset('mega_logistics_1m')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-emerald-50 cursor-pointer border border-emerald-200 bg-emerald-50/60 transition">
+                            <i class="fas fa-bolt text-emerald-600 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-bold text-emerald-950 flex items-center justify-between">
+                                    <span>06_mega_logistics_1m</span>
+                                    <span class="text-[9px] bg-emerald-200 text-emerald-900 px-1 py-0.2 rounded font-mono font-bold">1M CONSTRAINTS</span>
+                                </div>
+                                <div class="text-[10px] text-emerald-700">cuSPARSE GPU (2,500 Nodes)</div>
+                            </div>
+                        </li>
+
+                        <li class="border-t border-gray-200 my-2 pt-2"></li>
+                        
+                        <li class="font-semibold text-gray-700 px-2 py-1 text-[11px] uppercase tracking-wider text-gray-400">
+                            Sovereign Modules (Phases 1-18)
+                        </li>
+                        <li class="px-2 py-1 text-[11px] text-gray-600 flex items-center space-x-1.5">
+                            <i class="fas fa-check text-green-500 text-[10px]"></i> <span>Sparse LA (CSR Matrix)</span>
+                        </li>
+                        <li class="px-2 py-1 text-[11px] text-gray-600 flex items-center space-x-1.5">
+                            <i class="fas fa-check text-green-500 text-[10px]"></i> <span>Instance Online Tuner</span>
+                        </li>
+                        <li class="px-2 py-1 text-[11px] text-gray-600 flex items-center space-x-1.5">
+                            <i class="fas fa-check text-green-500 text-[10px]"></i> <span>Predict-Then-Optimize KKT</span>
+                        </li>
+                        <li class="px-2 py-1 text-[11px] text-gray-600 flex items-center space-x-1.5">
+                            <i class="fas fa-check text-green-500 text-[10px]"></i> <span>KKT Certified Proof</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Problem Browser & Model Stats -->
+            <div class="h-60 flex flex-col bg-white">
+                <div class="px-3 py-2 font-semibold text-xs text-gray-500 tracking-wider flex justify-between items-center bg-ide-gray border-b border-ide">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-calculator text-indigo-500"></i> <span>PROBLEM BROWSER</span>
+                    </div>
+                    <span id="modelTypeBadge" class="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded">MILP</span>
+                </div>
+                <div class="px-3 py-1.5 text-xs text-green-700 font-mono border-b border-ide bg-green-50 flex items-center justify-between">
+                    <span id="problemStatusText"><i class="fas fa-circle-check text-green-500 mr-1"></i> Valid Model Polytope</span>
+                    <span id="kktProofBadge" class="text-[10px] bg-white border border-green-300 text-green-800 px-1 rounded">1e-8 KKT</span>
+                </div>
+                <div class="flex-1 overflow-y-auto p-2">
+                    <table class="w-full text-xs font-mono">
+                        <tr class="hover:bg-gray-50 border-b border-gray-100"><td class="py-1 text-gray-500">Variables (n)</td><td id="statVars" class="text-right font-bold text-blue-600">4</td></tr>
+                        <tr class="hover:bg-gray-50 border-b border-gray-100"><td class="py-1 text-gray-500">Constraints (m)</td><td id="statCons" class="text-right font-bold text-orange-600">4</td></tr>
+                        <tr class="hover:bg-gray-50 border-b border-gray-100"><td class="py-1 text-gray-500">Sense</td><td id="statSense" class="text-right font-bold text-purple-600">MAXIMIZE</td></tr>
+                        <tr class="hover:bg-gray-50 border-b border-gray-100"><td class="py-1 text-gray-500">Non-Zeros (NNZ)</td><td id="statNNZ" class="text-right text-gray-700">11</td></tr>
+                        <tr class="hover:bg-gray-50 border-b border-gray-100"><td class="py-1 text-gray-500">Matrix Density</td><td id="statDensity" class="text-right text-green-600">68.75%</td></tr>
+                        <tr class="hover:bg-emerald-50"><td class="py-1 text-gray-500 flex items-center"><i class="fas fa-bolt text-amber-500 text-[10px] mr-1"></i> GPU Solve Time</td><td id="statGpuTime" class="text-right font-black text-emerald-600">READY (0.0 ms)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel (Editor & Visualizers & Console) -->
+        <div class="flex-1 flex flex-col bg-white overflow-hidden">
+            
+            <!-- Editor Area -->
+            <div class="flex-1 flex flex-col min-h-0">
+                <!-- Editor Tabs -->
+                <div class="flex bg-ide-gray border-b border-ide text-xs justify-between items-center">
+                    <div class="flex">
+                        <div id="tab-btn-json" onclick="switchInput('json')" class="px-4 py-2 border-r border-ide bg-white border-t-2 border-t-ide-blue font-semibold text-ide-blue flex items-center space-x-2 cursor-pointer transition">
+                            <i class="far fa-file-code text-blue-500"></i> <span id="currentFileName">model.json</span>
+                        </div>
+                        <div id="tab-btn-nlp" onclick="switchInput('nlp')" class="px-4 py-2 border-r border-ide text-gray-600 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer transition">
+                            <i class="fas fa-pen-fancy text-purple-500"></i> <span>algebraic_model.mod (NLP)</span>
+                        </div>
+                        <div id="tab-btn-smart" onclick="switchInput('smart')" class="px-4 py-2 border-r border-ide text-purple-800 bg-purple-50/60 hover:bg-purple-100 flex items-center space-x-2 cursor-pointer transition font-semibold">
+                            <i class="fas fa-wand-magic-sparkles text-purple-600"></i> <span>✨ Sahayak Smart Studio (English / MPS → Math & Solve)</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 pr-3 text-[11px] text-gray-500">
+                        <button onclick="formatJSON()" class="hover:text-blue-600 hover:bg-gray-200 px-2 py-0.5 rounded transition"><i class="fas fa-magic mr-1"></i>Format</button>
+                        <button onclick="clearEditor()" class="hover:text-red-600 hover:bg-gray-200 px-2 py-0.5 rounded transition"><i class="fas fa-trash-can mr-1"></i>Clear</button>
+                        <span>UTF-8</span>
+                    </div>
+                </div>
+                
+                <!-- Editor Content Area -->
+                <div class="flex-1 relative bg-white overflow-hidden">
+                    <!-- JSON Editor -->
+                    <textarea id="jsonInput" oninput="updateProblemStats()" class="absolute inset-0 w-full h-full p-3.5 font-mono text-xs resize-none focus:outline-none terminal-scroll leading-relaxed text-gray-800 select-text cursor-text" spellcheck="false">{
+  "name": "Advanced_Electronics_Production_Planning",
+  "engine": "MILP_BRANCH_AND_CUT",
+  "type": "MILP",
+  "description": "Semiconductor and hardware manufacturing assembly line scheduling with integer lot sizes and setup constraints.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "Smartphones": 450.0,
+      "Laptops": 1800.0,
+      "Tablets": 620.0,
+      "Servers": 4200.0
+    }
+  },
+  "constraints": [
+    {
+      "name": "Skilled_Labor_Capacity",
+      "rel": "<=",
+      "rhs": 1800.0,
+      "terms": {
+        "Smartphones": 2.5,
+        "Laptops": 8.0,
+        "Tablets": 4.0,
+        "Servers": 18.0
+      }
+    },
+    {
+      "name": "Silicon_Chip_Stock",
+      "rel": "<=",
+      "rhs": 2200.0,
+      "terms": {
+        "Smartphones": 1.0,
+        "Laptops": 2.0,
+        "Tablets": 1.0,
+        "Servers": 8.0
+      }
+    },
+    {
+      "name": "Cleanroom_Hours_Quota",
+      "rel": "<=",
+      "rhs": 950.0,
+      "terms": {
+        "Smartphones": 0.5,
+        "Laptops": 1.8,
+        "Tablets": 0.9,
+        "Servers": 6.5
+      }
+    },
+    {
+      "name": "Contractual_Min_Tablet_Commitment",
+      "rel": ">=",
+      "rhs": 50.0,
+      "terms": {
+        "Tablets": 1.0
+      }
+    }
+  ]
+}</textarea>
+                    
+                    <!-- NLP Editor (Hidden by default) -->
+                    <textarea id="promptInput" class="hidden absolute inset-0 w-full h-full p-3.5 font-mono text-xs resize-none focus:outline-none terminal-scroll leading-relaxed text-gray-800 select-text cursor-text" spellcheck="false">Maximize:
+450 Smartphones + 1800 Laptops + 620 Tablets + 4200 Servers
+
+Subject To:
+Labor_Capacity: 2.5 Smartphones + 8.0 Laptops + 4.0 Tablets + 18.0 Servers <= 1800
+Chip_Stock: 1.0 Smartphones + 2.0 Laptops + 1.0 Tablets + 8.0 Servers <= 2200
+Cleanroom: 0.5 Smartphones + 1.8 Laptops + 0.9 Tablets + 6.5 Servers <= 950
+Min_Tablets: 1.0 Tablets >= 50
+</textarea>
+
+                    <!-- Dedicated Sahayak Smart Studio (English / MPS -> Math & Direct Solve) -->
+                    <div id="smartInputContainer" class="hidden absolute inset-0 w-full h-full p-4 overflow-y-auto bg-gray-50 flex flex-col gap-3">
+                        <!-- Guidance Banner -->
+                        <div class="bg-purple-100/90 border border-purple-300 rounded p-2.5 flex items-center justify-between shadow-xs">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-wand-magic-sparkles text-purple-700 text-sm"></i>
+                                <div>
+                                    <div class="text-xs font-bold text-purple-950">Sahayak Smart AI Converter & Direct Solver (Zero Math Knowledge Required)</div>
+                                    <div class="text-[11px] text-purple-800">Type simple English or paste an industrial .mps file. The engine auto-detects problem type (LP, MILP, QP, MIQP), translates to math, and solves directly.</div>
+                                </div>
+                            </div>
+                            <span id="smartDetectedBadge" class="text-[10px] font-bold bg-purple-200 text-purple-900 border border-purple-300 px-2 py-0.5 rounded font-mono">READY</span>
+                        </div>
+
+                        <!-- Quick Prompt Buttons -->
+                        <div class="flex flex-wrap items-center gap-1.5 text-[10px] select-none">
+                            <span class="font-bold text-gray-500 mr-1">Quick Templates:</span>
+                            <button onclick="loadSmartTemplate('crude_blend')" class="px-2 py-0.5 bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 rounded font-medium transition shadow-2xs">🛢️ MRPL Crude Oil Blending (English)</button>
+                            <button onclick="loadSmartTemplate('assembly_milp')" class="px-2 py-0.5 bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 rounded font-medium transition shadow-2xs">💻 Hardware Production (MILP Integer)</button>
+                            <button onclick="loadSmartTemplate('portfolio_qp')" class="px-2 py-0.5 bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 rounded font-medium transition shadow-2xs">⚡ Clean Energy Portfolio (QP Risk)</button>
+                            <button onclick="loadSmartTemplate('netlib_mps')" class="px-2 py-0.5 bg-white hover:bg-purple-50 text-purple-900 border border-purple-200 rounded font-medium transition shadow-2xs">📋 NetLib Standard .MPS File</button>
+                        </div>
+
+                        <!-- Text Area Input -->
+                        <div class="flex flex-col">
+                            <textarea id="smartPromptInput" rows="5" class="w-full p-3 font-sans text-xs border border-purple-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white leading-relaxed select-text" placeholder="Type your problem in simple English (e.g. 'We want to maximize profit from Chairs and Tables. Chairs give 45 and Tables give 80. Labor is at most 100 hours...') OR paste a complete standard .mps file here..."></textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center space-x-2">
+                            <button onclick="smartConvertModel(false)" class="bg-white hover:bg-purple-50 text-purple-800 border border-purple-300 px-3.5 py-1.5 rounded shadow-xs text-xs font-semibold flex items-center space-x-1.5 transition">
+                                <i class="fas fa-wand-magic-sparkles text-purple-600"></i>
+                                <span>1. Auto-Convert & Explain</span>
+                            </button>
+                            <button onclick="smartConvertModel(true)" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-1.5 rounded shadow-sm text-xs font-bold flex items-center space-x-2 transition active:scale-95">
+                                <i class="fas fa-bolt text-yellow-300"></i>
+                                <span>2. Direct 1-Click Solve</span>
+                            </button>
+                            <button onclick="document.getElementById('smartPromptInput').value=''" class="text-gray-400 hover:text-gray-600 text-xs ml-auto">Clear</button>
+                        </div>
+
+                        <!-- Dynamic Dual Output Preview -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1 flex-1">
+                            <!-- Left: Plain-English Human Interpretation -->
+                            <div class="bg-white p-3 rounded border border-purple-200 shadow-xs flex flex-col">
+                                <div class="text-[11px] font-bold text-purple-900 mb-1.5 flex items-center justify-between border-b pb-1">
+                                    <span class="flex items-center"><i class="fas fa-comment-dots text-purple-600 mr-1.5"></i> Plain-English Interpretation</span>
+                                    <span class="text-[9.5px] text-gray-400 font-mono">For Non-Mathematicians</span>
+                                </div>
+                                <div id="smartExplanationBox" class="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto select-text">
+                                    Click "Auto-Convert & Explain" to view a human-readable interpretation of your problem.
+                                </div>
+                            </div>
+
+                            <!-- Right: Standard Mathematical Formulation -->
+                            <div class="bg-white p-3 rounded border border-purple-200 shadow-xs flex flex-col">
+                                <div class="text-[11px] font-bold text-purple-900 mb-1.5 flex items-center justify-between border-b pb-1">
+                                    <span class="flex items-center"><i class="fas fa-square-root-variable text-blue-600 mr-1.5"></i> Mathematical Canonical Formulation</span>
+                                    <span id="smartTypeBadge" class="text-[9.5px] bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded font-mono font-bold">TYPE: LP</span>
+                                </div>
+                                <div id="smartMathPreviewBox" class="text-xs font-mono text-gray-800 leading-relaxed whitespace-pre-wrap flex-1 overflow-y-auto select-text bg-gray-50 p-2 rounded border border-gray-200">
+                                    Objective and constraint matrices will generate here automatically.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horizontal Resizer Splitter -->
+            <div id="horizontalSplitter" class="h-2 bg-gray-200 hover:bg-blue-500 cursor-row-resize flex items-center justify-center transition select-none z-30 group" title="Drag up/down to resize Editor and Console">
+                <div class="w-12 h-1 bg-gray-400 group-hover:bg-white rounded-full"></div>
+            </div>
+
+            <!-- Console & Visualizer Bottom Panel (Resizable height) -->
+            <div id="consoleBottomPanel" class="h-64 flex border-t border-ide bg-white shrink-0 min-h-[90px] max-h-[85vh] relative">
+                
+                <!-- Left: Terminal, Visual Charts, and Algorithms (Resizable flex) -->
+                <div id="consoleLogPane" class="flex-1 flex flex-col border-r border-ide overflow-hidden min-w-[250px]">
+                    <!-- Console Tabs -->
+                    <div class="flex flex-wrap bg-ide-gray border-b border-ide text-xs select-none">
+                        <div id="btn-log" class="px-3.5 py-1.5 border-r border-ide bg-white font-semibold text-gray-800 flex items-center space-x-1.5 cursor-pointer border-t-2 border-t-ide-blue transition" onclick="switchConsole('log')">
+                            <i class="fas fa-terminal text-blue-500"></i> <span>Engine Log & Output</span>
+                        </div>
+                        <div id="btn-visualizer" class="px-3.5 py-1.5 border-r border-ide text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('visualizer')">
+                            <i class="fas fa-chart-pie text-indigo-500"></i> <span>Visual Analytics & Charts</span>
+                        </div>
+                        <div id="btn-bb" class="px-3.5 py-1.5 border-r border-ide text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('bb')">
+                            <i class="fas fa-sitemap text-purple-500"></i> <span>Branch & Bound Tree</span>
+                        </div>
+                        <div id="btn-simplex" class="px-3.5 py-1.5 border-r border-ide text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('simplex')">
+                            <i class="fas fa-table text-orange-500"></i> <span>Simplex Pivot Inspector</span>
+                        </div>
+                        <div id="btn-gpu" class="px-3.5 py-1.5 border-r border-ide text-gray-600 hover:bg-gray-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('gpu')">
+                            <i class="fas fa-microchip text-green-600"></i> <span>Hardware Profiler (GPU)</span>
+                        </div>
+                        <div id="btn-constraints" class="px-3.5 py-1.5 border-r border-ide text-emerald-800 bg-emerald-50/80 hover:bg-emerald-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('constraints')" title="Browse all 1,000,000 constraint rows live">
+                            <i class="fas fa-list-ol text-emerald-600"></i> <span>Constraint Explorer (1M Rows)</span>
+                        </div>
+                        <div id="btn-trends" class="px-3.5 py-1.5 border-r border-ide text-purple-900 bg-purple-50/70 hover:bg-purple-100 flex items-center space-x-1.5 cursor-pointer transition font-medium" onclick="switchConsole('trends')" title="Historical operational trends and warm-start analytics">
+                            <i class="fas fa-chart-line text-purple-600"></i> <span>Historical Trends & Warm-Start</span>
+                        </div>
+                        
+                        <div class="ml-auto flex items-center px-3 text-[11px] text-gray-400 space-x-2">
+                            <button onclick="copyTerminalOutput()" title="Copy Logs" class="hover:text-gray-700"><i class="fas fa-copy"></i></button>
+                            <button onclick="clearConsole()" title="Clear Console" class="hover:text-gray-700"><i class="fas fa-ban"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Console Content -->
+                    <div class="flex-1 relative bg-white overflow-hidden">
+                        
+                        <!-- 1. Terminal Log -->
+                        <pre id="engineOutput" class="absolute inset-0 w-full h-full p-3 font-mono text-[11px] text-gray-800 resize-none focus:outline-none terminal-scroll bg-gray-50 overflow-auto whitespace-pre-wrap leading-tight select-text">BharatOpt-X Native Runtime Ready.
+Select a model from the left sidebar or click 'Solve Model' to execute.</pre>
+                        
+                        <!-- 2. Visual Analytics & Charts Tab (Chart.js) -->
+                        <div id="tab-visualizer" class="hidden absolute inset-0 w-full h-full p-3 overflow-y-auto bg-gray-50 flex flex-col md:flex-row gap-3">
+                            <!-- Variable Distribution Bar Chart -->
+                            <div class="flex-1 bg-white p-2.5 rounded border border-gray-200 shadow-sm flex flex-col">
+                                <div class="text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+                                    <span><i class="fas fa-chart-bar text-blue-500 mr-1"></i> Optimal Variable Allocation</span>
+                                    <span class="text-[10px] text-gray-400">Units Produced</span>
+                                </div>
+                                <div class="flex-1 relative min-h-[140px]">
+                                    <canvas id="varsChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Constraints Slack & Capacity Doughnut Chart -->
+                            <div class="w-72 bg-white p-2.5 rounded border border-gray-200 shadow-sm flex flex-col">
+                                <div class="text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+                                    <span><i class="fas fa-chart-pie text-purple-500 mr-1"></i> Capacity Utilization</span>
+                                    <span class="text-[10px] text-gray-400">Binding vs Slack</span>
+                                </div>
+                                <div class="flex-1 relative min-h-[140px]">
+                                    <canvas id="constraintsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. B&B Tree Canvas -->
+                        <div id="tab-bb" class="hidden absolute inset-0 w-full h-full p-3 overflow-auto bg-gray-50 flex flex-col items-center select-none">
+                            <div class="text-[11px] font-semibold text-gray-600 mb-2 flex items-center space-x-2">
+                                <span>Branch & Bound Search Tree</span>
+                                <span class="bg-yellow-100 text-yellow-800 px-1.5 py-0.2 rounded text-[10px] font-bold border border-yellow-300">ROADMAP MOCKUP (PHASE 3)</span>
+                            </div>
+                            <div class="flex flex-col items-center scale-95 origin-top">
+                                <!-- Root Node -->
+                                <div class="w-32 p-1.5 bg-blue-50 border border-blue-300 rounded text-center text-[11px] shadow-sm">
+                                    <div class="font-bold text-blue-900">Node #1 (Root LP)</div>
+                                    <div class="text-blue-600 font-mono text-[10px]">Relaxed Z = 412,500</div>
+                                </div>
+                                <div class="w-px h-4 bg-gray-400"></div>
+                                <div class="flex space-x-12 border-t border-gray-400 pt-2 relative">
+                                    <!-- Node 2 (Infeasible) -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="text-[9px] text-gray-500 mb-0.5 font-mono">Laptops <= 200</div>
+                                        <div class="w-28 p-1.5 bg-red-50 border border-red-300 rounded text-center text-[10px] shadow-sm">
+                                            <div class="font-bold text-red-900">Node #2 (Sub-LP)</div>
+                                            <div class="text-red-600 font-mono">Z = 370,000</div>
+                                            <div class="text-[9px] text-red-500 font-semibold">[PRUNED BY BOUND]</div>
+                                        </div>
+                                    </div>
+                                    <!-- Node 3 (Optimal) -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="text-[9px] text-green-600 font-bold mb-0.5 font-mono">Laptops >= 225</div>
+                                        <div class="w-32 p-1.5 bg-green-50 border-2 border-green-500 rounded text-center text-[10px] shadow-md">
+                                            <div class="font-bold text-green-900">Node #3 (Integer)</div>
+                                            <div class="text-green-700 font-bold font-mono text-[11px]">Z = 405,000.00</div>
+                                            <div class="text-[9px] mt-0.5 font-bold text-white bg-green-600 px-1.5 py-0.2 rounded inline-block">CERTIFIED OPTIMAL</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 4. Simplex Tableau Inspector -->
+                        <div id="tab-simplex" class="hidden absolute inset-0 w-full h-full p-3 overflow-auto bg-gray-50">
+                            <div class="text-[11px] text-gray-600 font-semibold mb-1 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <span>Simplex Final Pivot Tableau</span>
+                                    <span class="bg-yellow-100 text-yellow-800 px-1.5 py-0.2 rounded text-[10px] font-bold border border-yellow-300">ROADMAP MOCKUP (PHASE 2 SPARSE)</span>
+                                </div>
+                                <span class="text-green-700 bg-green-100 px-1.5 py-0.5 rounded text-[10px]">Optimal Basis: {Laptops, s2, s3, s4}</span>
+                            </div>
+                            <table class="w-full text-[11px] text-left border-collapse bg-white border border-gray-200 font-mono shadow-sm">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 border-b border-gray-200">
+                                        <th class="p-1.5 border-r">Basis</th>
+                                        <th class="p-1.5 border-r">Smartphones</th>
+                                        <th class="p-1.5 border-r">Laptops</th>
+                                        <th class="p-1.5 border-r">Tablets</th>
+                                        <th class="p-1.5 border-r">Servers</th>
+                                        <th class="p-1.5 border-r">Slack 1</th>
+                                        <th class="p-1.5 border-r">Slack 2</th>
+                                        <th class="p-1.5 text-right font-bold text-blue-700">RHS (Value)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-1.5 border-r font-bold text-purple-700 bg-gray-50">Laptops</td>
+                                        <td class="p-1.5 border-r">0.3125</td>
+                                        <td class="p-1.5 border-r font-bold text-green-600">1.0000</td>
+                                        <td class="p-1.5 border-r">0.5000</td>
+                                        <td class="p-1.5 border-r">2.2500</td>
+                                        <td class="p-1.5 border-r">0.1250</td>
+                                        <td class="p-1.5 border-r">0.0000</td>
+                                        <td class="p-1.5 text-right font-bold text-blue-600">225.00</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-1.5 border-r font-bold text-gray-700 bg-gray-50">Slack 2</td>
+                                        <td class="p-1.5 border-r">0.3750</td>
+                                        <td class="p-1.5 border-r">0.0000</td>
+                                        <td class="p-1.5 border-r">0.0000</td>
+                                        <td class="p-1.5 border-r">3.5000</td>
+                                        <td class="p-1.5 border-r">-0.2500</td>
+                                        <td class="p-1.5 border-r font-bold text-green-600">1.0000</td>
+                                        <td class="p-1.5 text-right font-bold text-gray-700">1750.00</td>
+                                    </tr>
+                                    <tr class="bg-indigo-50 font-bold border-t-2 border-indigo-200">
+                                        <td class="p-1.5 border-r text-indigo-900 bg-indigo-100">Reduced Costs (c_j - z_j)</td>
+                                        <td class="p-1.5 border-r text-red-600 font-mono">-112.50</td>
+                                        <td class="p-1.5 border-r text-green-700 font-mono">0.00</td>
+                                        <td class="p-1.5 border-r text-red-600 font-mono">-280.00</td>
+                                        <td class="p-1.5 border-r text-red-600 font-mono">-150.00</td>
+                                        <td class="p-1.5 border-r text-purple-700 font-mono">225.00</td>
+                                        <td class="p-1.5 border-r text-green-700 font-mono">0.00</td>
+                                        <td class="p-1.5 text-right text-indigo-900 text-xs font-black">405,000.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 5. GPU Profiler -->
+                        <div id="tab-gpu" class="hidden absolute inset-0 w-full h-full p-3 overflow-auto bg-gray-900 text-gray-200 select-none">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <i class="fas fa-microchip text-green-400 text-lg"></i>
+                                <div class="text-xs font-bold text-white">Hardware Profiler (GPU)</div>
+                                <span class="bg-yellow-100 text-yellow-800 px-1.5 py-0.2 rounded text-[10px] font-bold border border-yellow-300">ROADMAP MOCKUP (PHASE 4)</span>
+                                <div class="ml-auto text-[10px] bg-green-500 text-black px-2 py-0.5 rounded font-bold">CUDA 12.2 ACTIVE</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3 mb-2">
+                                <div class="bg-gray-800 p-2 rounded border border-gray-700">
+                                    <div class="flex justify-between text-[11px] mb-1">
+                                        <span>Device VRAM Footprint</span>
+                                        <span class="text-green-400 font-mono">1.2 MB / 4096 MB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 2.5%"></div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-800 p-2 rounded border border-gray-700">
+                                    <div class="flex justify-between text-[11px] mb-1">
+                                        <span>cuSPARSE Matrix Streaming</span>
+                                        <span class="text-blue-400 font-mono">18.4 GB/s</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-[10px] font-mono text-gray-400 border-t border-gray-700 pt-2 space-y-0.5">
+                                <div>> cuBLAS Handle Initialized: Device ID 0</div>
+                                <div>> Sparse CSR matrix transferred to device memory.</div>
+                                <div>> GPU Factorization kernel dispatched: completed in 0.012ms.</div>
+                                <div class="text-green-400">> 0 Kernel Errors | Unified Virtual Memory Coherent.</div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Constraint Polytope Explorer (1,000,000 Rows Live Browser) -->
+                        <div id="tab-constraints" class="hidden absolute inset-0 w-full h-full p-2.5 overflow-hidden bg-gray-50 flex flex-col">
+                            <!-- Toolbar / Pager -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 p-2 bg-white border border-gray-200 rounded shadow-xs mb-2 text-xs shrink-0">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-gray-800 flex items-center"><i class="fas fa-layer-group text-emerald-600 mr-1.5"></i> Constraint Polytope Explorer:</span>
+                                    <span id="constraintsPagerSummary" class="text-[11px] font-mono text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-bold">Rows 0 - 50 of 1,000,000</span>
+                                </div>
+                                <div class="flex items-center space-x-1.5">
+                                    <button onclick="navigateConstraints('first')" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 font-mono text-[11px] text-gray-700" title="First Page">&laquo; First</button>
+                                    <button onclick="navigateConstraints('prev')" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 font-mono text-[11px] text-gray-700" title="Previous 50 Rows">&lsaquo; Prev 50</button>
+                                    <button onclick="navigateConstraints('next')" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 font-mono text-[11px] text-gray-700" title="Next 50 Rows">Next 50 &rsaquo;</button>
+                                    <button onclick="navigateConstraints('last')" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded border border-gray-300 font-mono text-[11px] text-gray-700" title="Last Page">Last &raquo;</button>
+                                    
+                                    <div class="h-4 border-l border-gray-300 mx-1"></div>
+                                    
+                                    <span class="text-gray-500 text-[11px]">Jump to Row:</span>
+                                    <input type="number" id="constraintJumpInput" placeholder="e.g. 500000" min="0" max="999950" class="w-24 px-1.5 py-0.5 border border-gray-300 rounded font-mono text-[11px] text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500" onkeydown="if(event.key==='Enter') jumpToConstraint()">
+                                    <button onclick="jumpToConstraint()" class="px-2 py-0.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[11px] font-medium transition">Go</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Milestones -->
+                            <div class="flex items-center space-x-1 mb-2 text-[10px] text-gray-500 select-none shrink-0">
+                                <span class="font-semibold text-gray-600">Quick Jumps:</span>
+                                <button onclick="loadConstraintOffset(0)" class="hover:underline text-blue-600 font-mono font-medium">Row 0 (Start)</button> &bull;
+                                <button onclick="loadConstraintOffset(100000)" class="hover:underline text-blue-600 font-mono font-medium">Row 100,000</button> &bull;
+                                <button onclick="loadConstraintOffset(500000)" class="hover:underline text-blue-600 font-mono font-medium">Row 500,000 (Midpoint)</button> &bull;
+                                <button onclick="loadConstraintOffset(750000)" class="hover:underline text-blue-600 font-mono font-medium">Row 750,000</button> &bull;
+                                <button onclick="loadConstraintOffset(999950)" class="hover:underline text-blue-600 font-mono font-medium">Row 999,950 (Terminal)</button>
+                            </div>
+
+                            <!-- Table Container -->
+                            <div class="flex-1 overflow-auto bg-white border border-gray-200 rounded shadow-xs">
+                                <table class="w-full text-[11px] text-left border-collapse font-mono">
+                                    <thead class="sticky top-0 bg-gray-100 text-gray-700 border-b border-gray-200">
+                                        <tr>
+                                            <th class="p-2 border-r w-16 text-center">Row #</th>
+                                            <th class="p-2 border-r w-24">Constraint ID</th>
+                                            <th class="p-2 border-r">Sparse Linear Combination (A_i · x)</th>
+                                            <th class="p-2 border-r w-14 text-center">Sense</th>
+                                            <th class="p-2 border-r w-24 text-right">RHS Bound</th>
+                                            <th class="p-2 border-r w-28 text-right">KKT Shadow (λ*)</th>
+                                            <th class="p-2 w-36">Polytope Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="constraintsTableBody" class="divide-y divide-gray-100">
+                                        <tr><td colspan="7" class="p-4 text-center text-gray-400">Loading 1,000,000 constraint polytope data...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 7. Historical Operational Trends & Warm-Start Forecasting Tab -->
+                        <div id="tab-trends" class="hidden absolute inset-0 w-full h-full p-3 overflow-y-auto bg-gray-50 flex flex-col gap-3">
+                            <!-- Top Metric Ribbons -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 shrink-0">
+                                <div class="bg-white p-2.5 rounded border border-gray-200 shadow-2xs">
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Total Historical Runs</div>
+                                    <div id="statTrendRuns" class="text-base font-bold text-gray-800 font-mono mt-0.5">--</div>
+                                    <div class="text-[9.5px] text-green-600 font-medium">Recorded Across Shifts</div>
+                                </div>
+                                <div class="bg-white p-2.5 rounded border border-gray-200 shadow-2xs">
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Objective Growth</div>
+                                    <div id="statTrendGain" class="text-base font-bold text-emerald-700 font-mono mt-0.5">--%</div>
+                                    <div class="text-[9.5px] text-emerald-600 font-medium">Marginal Optimization Yield</div>
+                                </div>
+                                <div class="bg-white p-2.5 rounded border border-gray-200 shadow-2xs">
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Primary Plant Bottleneck</div>
+                                    <div id="statTrendBottleneck" class="text-xs font-bold text-amber-900 truncate mt-0.5 font-mono">--</div>
+                                    <div id="statTrendFreq" class="text-[9.5px] text-amber-700 font-medium">Saturation Frequency: --%</div>
+                                </div>
+                                <div class="bg-white p-2.5 rounded border border-gray-200 shadow-2xs">
+                                    <div class="text-[10px] text-gray-500 font-semibold uppercase">Warm-Start Acceleration</div>
+                                    <div class="text-base font-bold text-purple-700 font-mono mt-0.5">~68% Faster</div>
+                                    <div class="text-[9.5px] text-purple-600 font-medium">Via Factorization Basis Reuse</div>
+                                </div>
+                            </div>
+
+                            <!-- Dual Trend Charts Split -->
+                            <div class="flex flex-col md:flex-row gap-3 min-h-[170px]">
+                                <!-- Chart 1: Historical Objective Progression -->
+                                <div class="flex-1 bg-white p-2.5 rounded border border-gray-200 shadow-xs flex flex-col">
+                                    <div class="text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+                                        <span><i class="fas fa-chart-line text-blue-500 mr-1.5"></i> Objective Value Trajectory Across Shifts</span>
+                                        <span class="text-[9.5px] text-gray-400 font-mono">Profit Yield (₹)</span>
+                                    </div>
+                                    <div class="flex-1 relative min-h-[130px]">
+                                        <canvas id="trendsChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Chart 2: Bottleneck Saturation Frequencies -->
+                                <div class="w-full md:w-80 bg-white p-2.5 rounded border border-gray-200 shadow-xs flex flex-col">
+                                    <div class="text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+                                        <span><i class="fas fa-layer-group text-amber-500 mr-1.5"></i> Bottleneck Saturation Frequencies</span>
+                                        <span class="text-[9.5px] text-gray-400 font-mono">Active Count</span>
+                                    </div>
+                                    <div class="flex-1 relative min-h-[130px]">
+                                        <canvas id="bottleneckFreqChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Warm-Start & Operations Insight Card -->
+                            <div class="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 p-3 rounded border border-purple-200 text-gray-800 shadow-xs shrink-0">
+                                <div class="font-bold text-purple-900 text-xs mb-1 flex items-center justify-between">
+                                    <span class="flex items-center"><i class="fas fa-brain text-purple-600 mr-1.5"></i> Predictive Warm-Start & Plant Debottlenecking Guidance</span>
+                                    <button onclick="loadHistoricalTrends()" class="text-[10px] text-purple-700 hover:text-purple-900 bg-white px-2 py-0.5 rounded border border-purple-200 font-medium">Refresh Trends</button>
+                                </div>
+                                <div id="trendsWarmStartAdvice" class="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                    Loading historical operational data and predictive basis warm-start parameters...
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Vertical Resizer Splitter -->
+                <div id="verticalSplitter" class="w-2 bg-gray-200 hover:bg-purple-500 cursor-col-resize flex items-center justify-center transition select-none z-30 group shrink-0" title="Drag left/right to resize Terminal and AI Box">
+                    <div class="h-10 w-1 bg-gray-400 group-hover:bg-white rounded-full"></div>
+                </div>
+
+                <!-- Right: BharatOpt Sahayak AI Insights (Resizable) -->
+                <div id="aiAdvicePane" class="w-80 bg-purple-50 flex flex-col overflow-hidden shrink-0 min-w-[220px] max-w-[65vw]">
+                    <div class="px-3 py-1.5 bg-purple-100 border-b border-purple-200 text-xs font-bold text-purple-900 flex items-center justify-between">
+                        <div class="flex items-center space-x-1.5">
+                            <i class="fas fa-sparkles text-purple-600"></i> <span>BharatOpt Sahayak (AI)</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <button onclick="copyAIAdvice()" title="Copy AI Analysis" class="px-1.5 py-0.5 rounded bg-purple-200 hover:bg-purple-300 text-purple-800 text-[10px] font-medium transition flex items-center space-x-1">
+                                <i class="fas fa-copy"></i> <span>Copy</span>
+                            </button>
+                            <span class="text-[9px] bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded font-mono">Real-Time</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dynamic AI Content Area (Strictly Selectable Text) -->
+                    <div class="p-3 text-xs text-gray-800 flex-1 overflow-y-auto select-text cursor-text leading-relaxed" id="aiAdvice">
+                        <div class="text-center py-6 text-gray-400 select-none">
+                            <i class="fas fa-wand-magic-sparkles text-2xl text-purple-300 mb-2"></i>
+                            <p class="font-medium text-purple-900">Awaiting Model Execution</p>
+                            <p class="text-[11px] text-gray-500 mt-1">Click "Solve Model" to generate deep mathematical insights, bottleneck analysis, and strategic recommendations.</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Follow-up Query Box -->
+                    <div class="p-2 border-t border-purple-200 bg-white flex space-x-1">
+                        <input type="text" id="aiQueryInput" placeholder="Ask AI: e.g. What if capacity +20%?" class="flex-1 px-2 py-1 text-xs border border-purple-200 rounded focus:outline-none focus:ring-1 focus:ring-purple-500 select-text cursor-text" onkeydown="if(event.key==='Enter') askSahayak()">
+                        <button onclick="askSahayak()" class="bg-purple-600 hover:bg-purple-700 text-white px-2.5 py-1 rounded text-xs transition"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Bottom Status Bar -->
+    <footer class="bg-ide-gray border-t border-ide px-3 py-1 flex justify-between items-center text-xs text-gray-500 shrink-0 select-none">
+        <div class="flex space-x-4 items-center">
+            <span class="flex items-center"><i class="fas fa-circle-check text-green-500 mr-1"></i> <span id="statusEngineState">BharatOpt-X Core Engine Online</span></span>
+            <span class="border-l border-gray-300 pl-3">Encoding: UTF-8</span>
+            <span class="border-l border-gray-300 pl-3" id="activeFormatLabel">Format: JSON / Native MPS</span>
+            <span class="border-l border-gray-300 pl-3 text-indigo-600 font-semibold" id="activeEngineLabel">Engine: MILP (GNN-assisted branching)</span>
+        </div>
+        <div class="flex space-x-4 items-center">
+            <span id="cursorPosLabel">Ln 1, Col 1</span>
+            <span class="text-green-700 font-medium"><i class="fas fa-microchip mr-1"></i>GPU: Active</span>
+        </div>
+    </footer>
+
+    <!-- Architecture & Help Modal -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="px-4 py-3 bg-indigo-900 text-white flex justify-between items-center">
+                <div class="font-bold flex items-center space-x-2">
+                    <i class="fas fa-layer-group text-indigo-400"></i>
+                    <span>BharatOpt-X | Sovereign Optimization Architecture</span>
+                </div>
+                <button onclick="closeHelpModal()" class="text-gray-300 hover:text-white text-lg"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto text-xs text-gray-700 space-y-3 leading-relaxed">
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded">
+                    <div class="font-bold text-blue-900 mb-1">🇮🇳 100% Clean-Room Sovereign Architecture</div>
+                    <p>BharatOpt-X is built completely from scratch in C++23 as a sovereign alternative to IBM CPLEX and FICO Xpress for Mangalore Refinery and Petrochemicals Limited (MRPL) and the Smart India Hackathon (SIH).</p>
+                </div>
+                
+                <h4 class="font-bold text-gray-900 border-b pb-1">Key Subsystem Engines:</h4>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Two-Phase Revised Simplex:</strong> Native sparse matrix representation (CSR/CSC) with LU-factorization.</li>
+                    <li><strong>GNN-assisted branching (MILP):</strong> Strong branching heuristic coupled with a Graph Neural Network (GNN) variable selector research prototype.</li>
+                    <li><strong>Primal-Dual Interior Point (IPM):</strong> Cholesky factorization for convex Quadratic Programming (QP).</li>
+                    <li><strong>ADMM Decentralized Consensus:</strong> Multi-unit refinery scheduling (CDU, FCC, Hydrocracker) decoupling.</li>
+                    <li><strong>GPU Acceleration:</strong> Sparse Linear Algebra dispatched via cuSPARSE and cuBLAS.</li>
+                </ul>
+
+                <h4 class="font-bold text-gray-900 border-b pb-1">Included Test Datasets:</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="p-2 border rounded bg-gray-50">
+                        <div class="font-bold text-blue-700">01. LP Crude Blending</div>
+                        <div class="text-gray-500">CDU refinery crude selection with distillation yield bounds.</div>
+                    </div>
+                    <div class="p-2 border rounded bg-gray-50">
+                        <div class="font-bold text-purple-700">02. MILP Electronics</div>
+                        <div class="text-gray-500">Discrete hardware manufacturing assembly scheduling.</div>
+                    </div>
+                    <div class="p-2 border rounded bg-gray-50">
+                        <div class="font-bold text-green-700">03. QP Portfolio Risk</div>
+                        <div class="text-gray-500">Markowitz mean-variance clean energy infrastructure investments.</div>
+                    </div>
+                    <div class="p-2 border rounded bg-gray-50">
+                        <div class="font-bold text-orange-700">04. ADMM Refinery Network</div>
+                        <div class="text-gray-500">Decentralized hydrogen and steam balance across MRPL units.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 py-2.5 bg-gray-100 border-t flex justify-end">
+                <button onclick="closeHelpModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded text-xs font-semibold">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Model Creation Modal -->
+    <div id="newModelModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl max-w-xl w-full flex flex-col overflow-hidden animate-fadeIn">
+            <div class="px-5 py-3.5 bg-gradient-to-r from-blue-700 to-indigo-800 text-white flex justify-between items-center">
+                <div class="font-bold flex items-center space-x-2 text-sm">
+                    <i class="fas fa-file-medical text-yellow-300"></i>
+                    <span>Create New Optimization Model</span>
+                </div>
+                <button onclick="closeNewModelModal()" class="text-gray-300 hover:text-white text-lg transition"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="p-5 space-y-3.5 text-xs text-gray-700">
+                <p class="text-gray-600">Select how you want to build your optimization model. The solver engine supports natural language, structured JSON, and standard algebraic math.</p>
+
+                <div class="grid grid-cols-1 gap-2.5">
+                    <!-- Option 1: Sahayak Smart Studio (English) -->
+                    <div onclick="createNewModel('smart', false)" class="group p-3 border-2 border-purple-200 hover:border-purple-600 rounded-lg bg-purple-50/40 hover:bg-purple-50 cursor-pointer transition flex items-start space-x-3">
+                        <div class="w-9 h-9 rounded-md bg-purple-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm group-hover:scale-105 transition">
+                            <i class="fas fa-wand-magic-sparkles text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-purple-950 text-xs">1. Sahayak Smart Studio (Plain English)</span>
+                                <span class="text-[10px] bg-purple-200 text-purple-900 px-1.5 py-0.2 rounded font-semibold">Recommended</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 mt-0.5 leading-snug">Type or edit your problem in simple English (e.g. Chairs, Tables, refinery blend, factory quotas). The engine converts to math and solves directly.</p>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: JSON Native Model -->
+                    <div onclick="createNewModel('json', false)" class="group p-3 border-2 border-blue-200 hover:border-blue-600 rounded-lg bg-blue-50/40 hover:bg-blue-50 cursor-pointer transition flex items-start space-x-3">
+                        <div class="w-9 h-9 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm group-hover:scale-105 transition">
+                            <i class="fas fa-code text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-blue-950 text-xs">2. JSON Native Model (LP / MILP / QP)</span>
+                                <span class="text-[10px] bg-blue-200 text-blue-900 px-1.5 py-0.2 rounded font-semibold">Structured</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 mt-0.5 leading-snug">Direct JSON formulation with objective linear terms, quadratic matrices, and linear constraints for maximum programmatic control.</p>
+                        </div>
+                    </div>
+
+                    <!-- Option 3: Algebraic NLP Model (.mod) -->
+                    <div onclick="createNewModel('nlp', false)" class="group p-3 border-2 border-emerald-200 hover:border-emerald-600 rounded-lg bg-emerald-50/40 hover:bg-emerald-50 cursor-pointer transition flex items-start space-x-3">
+                        <div class="w-9 h-9 rounded-md bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm group-hover:scale-105 transition">
+                            <i class="fas fa-pen-fancy text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-emerald-950 text-xs">3. Algebraic Math Formulation (.mod)</span>
+                                <span class="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded font-semibold">Algebraic</span>
+                            </div>
+                            <p class="text-[11px] text-gray-600 mt-0.5 leading-snug">Classic mathematical programming syntax: Maximize objective terms Subject To linear inequalities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 py-3 bg-gray-50 border-t flex items-center justify-between">
+                <button onclick="createNewModel(currentMode || 'json', true)" class="text-xs text-gray-600 hover:text-red-600 flex items-center space-x-1 font-medium transition">
+                    <i class="fas fa-file mr-1"></i> Start with Empty Blank Slate
+                </button>
+                <button onclick="closeNewModelModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-1.5 rounded text-xs font-semibold transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script with Cache Buster -->
+    <script src="app.js?v=3.1"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+Benchmark: Infeasible_Model
+File: tests/data/bench_06_infeasible.dat
+Hardware CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+Hardware GPU: NVIDIA CUDA GPU (cuSPARSE Accelerated)
+============================================================
+RAW STDOUT:
+============================================================
+{
+  "status": "INFEASIBLE",
+  "objective": null,
+  "certificate": {"type": "Farkas_Infeasibility_Witness", "violating_constraint": "c1", "infeasible_slack": 5.000000},
+  "iterations": 1,
+  "solve_time_ms": 0.209,
+  "num_vars": 1,
+  "num_constraints": 2,
+  "nnz": 2,
+  "bb_nodes": 0,
+  "cuts_applied": 0,
+  "primal_residual": 0,
+  "dual_residual": 0,
+  "duality_gap": 0,
+  "backend": "CPU_Simplex",
+  "gpu": "None (CPU Execution)",
+  "gpu_time_ms": 0,
+  "slacks": {
+    "c1": 0,
+    "c2": 0
+  },
+  "duals": {
+    "c1": 0,
+    "c2": 0
+  },
+  "variables": {
+    "x": 0
+  }
+}

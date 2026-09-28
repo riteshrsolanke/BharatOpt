@@ -1,0 +1,10 @@
+# BharatOpt-X Python Dependencies
+# Required for the ML GNN Sidecar (Phase 14)
+
+torch>=2.0.0
+torch_geometric>=2.3.0
+flask>=2.0.0
+fastapi>=0.100.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
+google-genai>=0.2.0

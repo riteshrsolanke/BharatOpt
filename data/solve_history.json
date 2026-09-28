@@ -1,0 +1,89 @@
+[
+  {
+    "id": "run-001",
+    "timestamp": "2026-09-27 06:00",
+    "shift": "Shift 1 (Dawn CDU Dispatch)",
+    "model_name": "MRPL_Crude_Oil_Blending_LP",
+    "type": "LP",
+    "objective": 384250.0,
+    "solve_time_ms": 7.4,
+    "status": "OPTIMAL",
+    "bottlenecks": [
+      "CDU_Total_Throughput_Limit"
+    ],
+    "shadow_prices": {
+      "CDU_Total_Throughput_Limit": 18.5
+    },
+    "certified": true
+  },
+  {
+    "id": "run-002",
+    "timestamp": "2026-09-27 14:00",
+    "shift": "Shift 2 (High-Octane Day Run)",
+    "model_name": "MRPL_Crude_Oil_Blending_LP",
+    "type": "LP",
+    "objective": 412500.0,
+    "solve_time_ms": 6.8,
+    "status": "OPTIMAL",
+    "bottlenecks": [
+      "CDU_Total_Throughput_Limit",
+      "Min_High_Octane_Gasoline_Yield"
+    ],
+    "shadow_prices": {
+      "CDU_Total_Throughput_Limit": 20.0,
+      "Min_High_Octane_Gasoline_Yield": 14.2
+    },
+    "certified": true
+  },
+  {
+    "id": "run-003",
+    "timestamp": "2026-09-27 22:00",
+    "shift": "Shift 3 (Low-Sulfur Export Night)",
+    "model_name": "MRPL_Crude_Oil_Blending_LP",
+    "type": "LP",
+    "objective": 398000.0,
+    "solve_time_ms": 8.1,
+    "status": "OPTIMAL",
+    "bottlenecks": [
+      "Max_Desulfurization_Capacity"
+    ],
+    "shadow_prices": {
+      "Max_Desulfurization_Capacity": 22.4
+    },
+    "certified": true
+  },
+  {
+    "id": "run-004",
+    "timestamp": "2026-09-28 06:00",
+    "shift": "Shift 4 (Heavy Sour Blend)",
+    "model_name": "MRPL_Crude_Oil_Blending_LP",
+    "type": "LP",
+    "objective": 428600.0,
+    "solve_time_ms": 7.2,
+    "status": "OPTIMAL",
+    "bottlenecks": [
+      "CDU_Total_Throughput_Limit"
+    ],
+    "shadow_prices": {
+      "CDU_Total_Throughput_Limit": 21.8
+    },
+    "certified": true
+  },
+  {
+    "id": "run-005",
+    "timestamp": "2026-09-28 14:00",
+    "shift": "Shift 5 (Hardware & Supply Schedule)",
+    "model_name": "Advanced_Electronics_Production_Planning",
+    "type": "MILP",
+    "objective": 405000.0,
+    "solve_time_ms": 9.5,
+    "status": "OPTIMAL",
+    "bottlenecks": [
+      "Skilled_Labor_Capacity"
+    ],
+    "shadow_prices": {
+      "Skilled_Labor_Capacity": 225.0
+    },
+    "certified": true
+  }
+]

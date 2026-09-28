@@ -1,0 +1,58 @@
+{
+  "name": "Advanced_Electronics_Production_Planning",
+  "engine": "MILP_BRANCH_AND_CUT",
+  "type": "MILP",
+  "description": "Semiconductor and hardware manufacturing assembly line scheduling with integer lot sizes and setup constraints.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "Smartphones": 450.0,
+      "Laptops": 1800.0,
+      "Tablets": 620.0,
+      "Servers": 4200.0
+    }
+  },
+  "constraints": [
+    {
+      "name": "Skilled_Labor_Capacity",
+      "rel": "<=",
+      "rhs": 1800.0,
+      "terms": {
+        "Smartphones": 2.5,
+        "Laptops": 8.0,
+        "Tablets": 4.0,
+        "Servers": 18.0
+      }
+    },
+    {
+      "name": "Silicon_Chip_Stock",
+      "rel": "<=",
+      "rhs": 2200.0,
+      "terms": {
+        "Smartphones": 1.0,
+        "Laptops": 2.0,
+        "Tablets": 1.0,
+        "Servers": 8.0
+      }
+    },
+    {
+      "name": "Cleanroom_Hours_Quota",
+      "rel": "<=",
+      "rhs": 950.0,
+      "terms": {
+        "Smartphones": 0.5,
+        "Laptops": 1.8,
+        "Tablets": 0.9,
+        "Servers": 6.5
+      }
+    },
+    {
+      "name": "Contractual_Min_Tablet_Commitment",
+      "rel": ">=",
+      "rhs": 50.0,
+      "terms": {
+        "Tablets": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+Benchmark: Electronics_Production_MILP
+File: data/bench_02_milp_electronics_production.dat
+Hardware CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+Hardware GPU: NVIDIA CUDA GPU (cuSPARSE Accelerated)
+============================================================
+RAW STDOUT:
+============================================================
+{
+  "status": "OPTIMAL",
+  "objective": 404200,
+  "certificate": {"type": "MIP_Integer_Feasibility_Witness", "bb_nodes": 3},
+  "iterations": 3,
+  "solve_time_ms": 1089.33,
+  "num_vars": 4,
+  "num_constraints": 4,
+  "nnz": 13,
+  "bb_nodes": 3,
+  "cuts_applied": 0,
+  "primal_residual": 0,
+  "dual_residual": 0,
+  "duality_gap": 28000,
+  "backend": "CPU_BranchAndBound",
+  "gpu": "None (CPU Execution)",
+  "gpu_time_ms": 0,
+  "slacks": {
+    "Skilled_Labor_Capacity": 0,
+    "Silicon_Chip_Stock": 1442,
+    "Cleanroom_Hours_Quota": 329.4,
+    "Contractual_Min_Tablet_Commitment": 0
+  },
+  "duals": {
+    "Skilled_Labor_Capacity": 225,
+    "Silicon_Chip_Stock": 0,
+    "Cleanroom_Hours_Quota": 0,
+    "Contractual_Min_Tablet_Commitment": 280
+  },
+  "variables": {
+    "Laptops": 2,
+    "Servers": 88,
+    "Smartphones": 0,
+    "Tablets": 50
+  }
+}

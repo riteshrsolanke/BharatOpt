@@ -1,0 +1,48 @@
+{
+  "name": "Markowitz_Energy_Asset_Portfolio_QP",
+  "engine": "QP_ACTIVE_SET_IPM",
+  "type": "QP",
+  "description": "Quadratic Programming model balancing expected returns against asset covariance risk in clean energy infra investments.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "Solar_Park_Allocation": 14.5,
+      "Wind_Offshore_Allocation": 18.2,
+      "Green_Hydrogen_Allocation": 24.0,
+      "Biofuel_Refining_Allocation": 11.8
+    }
+  },
+  "constraints": [
+    {
+      "name": "Total_Capital_Budget",
+      "rel": "<=",
+      "rhs": 100.0,
+      "terms": {
+        "Solar_Park_Allocation": 1.0,
+        "Wind_Offshore_Allocation": 1.0,
+        "Green_Hydrogen_Allocation": 1.0,
+        "Biofuel_Refining_Allocation": 1.0
+      }
+    },
+    {
+      "name": "Regulatory_ESG_Risk_Envelope",
+      "rel": "<=",
+      "rhs": 65.0,
+      "terms": {
+        "Solar_Park_Allocation": 0.45,
+        "Wind_Offshore_Allocation": 0.60,
+        "Green_Hydrogen_Allocation": 0.95,
+        "Biofuel_Refining_Allocation": 0.35
+      }
+    },
+    {
+      "name": "Minimum_Renewable_Baseload",
+      "rel": ">=",
+      "rhs": 25.0,
+      "terms": {
+        "Solar_Park_Allocation": 1.0,
+        "Wind_Offshore_Allocation": 1.0
+      }
+    }
+  ]
+}

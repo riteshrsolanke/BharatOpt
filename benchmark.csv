@@ -1,0 +1,8 @@
+Model_Name,Problem_Class,Variables,Constraints,NNZ,Backend,Active_Hardware,Repetitions,Avg_Solve_Time_ms,StdDev_ms,Iterations,Objective,Primal_Residual,Dual_Residual,Duality_Gap,Status,Certificate_Type
+MRPL_Crude_Blending,Continuous LP (Refinery),4,10,28,CPU_Simplex,None (CPU Execution),5,0.3856,0.0556,11,55750000.0,0.00e+00,0.00e+00,0.00e+00,OPTIMAL,Optimality_Certificate
+Electronics_Production_MILP,MILP (Branch & Bound),4,4,13,CPU_BranchAndBound,None (CPU Execution),3,1086.0033,5.4934,3,404200,0.00e+00,0.00e+00,2.80e+04,OPTIMAL,MIP_Integer_Feasibility_Witness
+Fractional_Root_MILP,MILP (B&B + GNN),2,1,2,CPU_BranchAndBound,None (CPU Execution),3,2154.2233,19.1614,2,5,0.00e+00,0.00e+00,0.00e+00,OPTIMAL,MIP_Integer_Feasibility_Witness
+Infeasible_Model,LP (Infeasibility Witness),1,2,2,CPU_Simplex,None (CPU Execution),3,0.1964,0.0134,1,,0.00e+00,0.00e+00,0.00e+00,INFEASIBLE,Farkas_Infeasibility_Witness
+Unbounded_Model,LP (Unbounded Ray),1,1,1,CPU_Simplex,None (CPU Execution),3,0.1825,0.0201,1,,0.00e+00,0.00e+00,0.00e+00,UNBOUNDED,Unbounded_Ray
+Netlib_SC50B,Netlib Staircase LP,48,50,167,CPU_PDLP,None (CPU Execution),3,115.941,3.1287,100000,117.315,2.34e+00,5.92e+04,1.29e+05,ITERATION_LIMIT,Throughput_Demo_Checkpoint
+MIPLIB_Stein9,MIPLIB 0-1 Set Covering,9,13,39,CPU_BranchAndBound,None (CPU Execution),3,6439.9967,14.2982,20,4,0.00e+00,1.00e+00,0.00e+00,OPTIMAL,MIP_Integer_Feasibility_Witness

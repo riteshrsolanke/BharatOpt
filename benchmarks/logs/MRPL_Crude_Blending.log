@@ -1,0 +1,55 @@
+Benchmark: MRPL_Crude_Blending
+File: data/bench_01_lp_mrpl_crude_blending.dat
+Hardware CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+Hardware GPU: NVIDIA CUDA GPU (cuSPARSE Accelerated)
+============================================================
+RAW STDOUT:
+============================================================
+{
+  "status": "OPTIMAL",
+  "objective": 5.575e+07,
+  "certificate": {"type": "Optimality_Certificate", "primal_residual": 0.000000, "dual_residual": 0.000000, "duality_gap": 0.000000},
+  "iterations": 11,
+  "solve_time_ms": 0.4862,
+  "num_vars": 4,
+  "num_constraints": 10,
+  "nnz": 28,
+  "bb_nodes": 0,
+  "cuts_applied": 0,
+  "primal_residual": 0,
+  "dual_residual": 0,
+  "duality_gap": 0,
+  "backend": "CPU_Simplex",
+  "gpu": "None (CPU Execution)",
+  "gpu_time_ms": 0,
+  "slacks": {
+    "CDU_Capacity": 0,
+    "ArabLight_Ship": 0,
+    "Brent_Ship": 0,
+    "Maya_Ship": 3000,
+    "Murban_Ship": 0,
+    "Blend_Sulfur_Max": 850,
+    "Blend_API_Min": 89000,
+    "Gasoline_Demand": 1525,
+    "Diesel_Demand": 90,
+    "Residue_Cap": 1055
+  },
+  "duals": {
+    "CDU_Capacity": 4200,
+    "ArabLight_Ship": 0,
+    "Brent_Ship": 900,
+    "Maya_Ship": 0,
+    "Murban_Ship": 550,
+    "Blend_Sulfur_Max": 0,
+    "Blend_API_Min": 0,
+    "Gasoline_Demand": 0,
+    "Diesel_Demand": 0,
+    "Residue_Cap": 0
+  },
+  "variables": {
+    "ArabLight": 4500,
+    "Brent": 3500,
+    "Maya": 0,
+    "Murban": 4000
+  }
+}

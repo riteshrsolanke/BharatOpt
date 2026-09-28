@@ -1,0 +1,7 @@
+Benchmark: National_Logistics_1M
+File: data/bench_1m_national_logistics.dat
+Hardware CPU: AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD
+Hardware GPU: NVIDIA CUDA GPU (cuSPARSE Accelerated)
+============================================================
+RAW STDOUT:
+============================================================
