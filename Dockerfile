@@ -1,12 +1,14 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an official Python runtime as a parent image (3.11 gives us a newer CMake)
+FROM python:3.11-slim
 
-# Install C++ build tools
+# Install C++ build tools and git (needed for FetchContent)
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     g++ \
+    git \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Set the working directory in the container
 WORKDIR /app
