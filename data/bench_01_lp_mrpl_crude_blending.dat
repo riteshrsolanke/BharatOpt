@@ -1,0 +1,25 @@
+4 10 -1
+ArabLight 4200.0
+Brent 5100.0
+Maya 2800.0
+Murban 4750.0
+CDU_Capacity L 12000.0
+ArabLight_Ship L 4500.0
+Brent_Ship L 3500.0
+Maya_Ship L 3000.0
+Murban_Ship L 4000.0
+Blend_Sulfur_Max L 2400.0
+Blend_API_Min G 348000.0
+Gasoline_Demand G 2400.0
+Diesel_Demand G 3600.0
+Residue_Cap L 4200.0
+1.0 1.0 1.0 1.0 
+1.0 0.0 0.0 0.0 
+0.0 1.0 0.0 0.0 
+0.0 0.0 1.0 0.0 
+0.0 0.0 0.0 1.0 
+0.18 0.12 0.38 0.08 
+32.0 38.0 22.0 40.0 
+0.28 0.35 0.15 0.36 
+0.32 0.3 0.28 0.3 
+0.35 0.22 0.52 0.2 

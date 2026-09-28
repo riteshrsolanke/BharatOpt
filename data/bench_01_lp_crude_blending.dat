@@ -1,0 +1,13 @@
+4 4 -1
+Arab_Light_bbl 24.5
+Bonny_Light_bbl 28.6
+Brent_Blend_bbl 31.2
+Maya_Heavy_bbl 18.75
+CDU_Total_Throughput_Limit L 150000.0
+Max_Desulfurization_Capacity L 220000.0
+Min_High_Octane_Gasoline_Yield G 35000.0
+Heavy_Fuel_Oil_Slurry_Limit L 25000.0
+1.0 1.0 1.0 1.0 
+1.8 0.4 0.9 3.4 
+0.28 0.32 0.35 0.15 
+0.12 0.05 0.08 0.38 

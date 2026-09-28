@@ -1,5 +1,12 @@
-**/*.dat
+data/million.dat
+data/bench_1m_national_logistics.dat
+data/electronics_1M.dat
+data/bench_99_large_scale.dat
+tests/data/bench_92_1k.dat
+tests/data/bench_93_5k.dat
+tests/data/bench_94_20k.dat
 *.exe
 third_party/
 build/
 __pycache__/
+

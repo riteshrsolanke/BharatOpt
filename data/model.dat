@@ -1,0 +1,50 @@
+5 22 -1
+Bengaluru_Air_Cargo 110.0
+Chennai_Freight_Corridor 78.2
+Delhi_Hub_Outflow 85.5
+Kolkata_Logistics_Node 64.8
+Mumbai_Port_Intermodal 92.4
+c_0_Delhi_Hub_Corridor L 100.0
+c_1_Mumbai_Port_Transfer L 102.0
+c_2_Chennai_Kolkata_Link L 104.0
+c_3_Kolkata_Bengaluru_Air L 106.0
+c_4_Bengaluru_Delhi_Intermodal L 108.0
+c_5_North_Corridor_Relay L 110.0
+c_6_West_Coast_Freight_Link L 112.0
+c_7_East_Corridor_Feeder L 114.0
+c_8_South_Industrial_Spur L 116.0
+c_9_Central_Grid_Logistics L 118.0
+c_10_National_Hub_Cap_10 L 120.0
+c_11_National_Hub_Cap_11 L 122.0
+c_12_National_Hub_Cap_12 L 124.0
+c_13_National_Hub_Cap_13 L 126.0
+c_14_National_Hub_Cap_14 L 128.0
+c_15_National_Hub_Cap_15 L 130.0
+c_16_National_Hub_Cap_16 L 132.0
+c_17_National_Hub_Cap_17 L 134.0
+c_18_National_Hub_Cap_18 L 136.0
+c_19_National_Hub_Cap_19 L 138.0
+c_20_National_Hub_Cap_20 L 140.0
+c_21_to_c_999999_Megascale_Network L 1500000.0
+0.0 0.0 1.0 0.0 1.5 
+0.0 1.5 0.0 0.0 1.0 
+0.0 1.0 0.0 1.5 0.0 
+1.5 0.0 0.0 1.0 0.0 
+1.0 0.0 1.5 0.0 0.0 
+0.0 1.5 1.0 0.0 0.0 
+1.5 0.0 0.0 0.0 1.0 
+0.0 0.0 1.5 1.0 0.0 
+0.0 1.0 0.0 0.0 1.5 
+1.0 0.0 0.0 1.5 0.0 
+0.0 0.0 1.0 0.0 1.5 
+0.0 1.5 0.0 0.0 1.0 
+0.0 1.0 0.0 1.5 0.0 
+1.5 0.0 0.0 1.0 0.0 
+1.0 0.0 1.5 0.0 0.0 
+0.0 1.5 1.0 0.0 0.0 
+1.5 0.0 0.0 0.0 1.0 
+0.0 0.0 1.5 1.0 0.0 
+0.0 1.0 0.0 0.0 1.5 
+1.0 0.0 0.0 1.5 0.0 
+0.0 0.0 1.0 0.0 1.5 
+1.0 1.0 1.0 1.0 1.0 

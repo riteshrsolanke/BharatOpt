@@ -1,0 +1,11 @@
+4 3 -1
+Biofuel_Refining_Allocation 11.8
+Green_Hydrogen_Allocation 24.0
+Solar_Park_Allocation 14.5
+Wind_Offshore_Allocation 18.2
+Total_Capital_Budget L 100.0
+Regulatory_ESG_Risk_Envelope L 65.0
+Minimum_Renewable_Baseload G 25.0
+1.0 1.0 1.0 1.0 
+0.35 0.95 0.45 0.6 
+0.0 0.0 1.0 1.0 

@@ -1,0 +1,11 @@
+4 3 -1
+CDU_Naphtha_Feed 42.0
+FCC_Gasoline_Blend 68.5
+Hydrocracker_Diesel_Export 74.0
+Petchem_Propylene_Grade 95.0
+Hydrogen_Grid_Consensus_Coupling L 1850.0
+High_Pressure_Steam_Balance L 2400.0
+Sulfur_Emission_Cap_Norms L 480.0
+0.8 1.4 3.8 2.1 
+1.5 2.2 2.9 1.2 
+0.15 0.45 0.2 0.1 

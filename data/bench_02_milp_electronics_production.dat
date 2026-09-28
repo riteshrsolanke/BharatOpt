@@ -1,0 +1,15 @@
+4 4 -1
+Laptops 1800.0
+Servers 4200.0
+Smartphones 450.0
+Tablets 620.0
+Skilled_Labor_Capacity L 1800.0
+Silicon_Chip_Stock L 2200.0
+Cleanroom_Hours_Quota L 950.0
+Contractual_Min_Tablet_Commitment G 50.0
+8.0 18.0 2.5 4.0 
+2.0 8.0 1.0 1.0 
+1.8 6.5 0.5 0.9 
+0.0 0.0 0.0 1.0 
+INTEGERS
+1 1 1 1 
