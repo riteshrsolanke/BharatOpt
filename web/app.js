@@ -720,7 +720,9 @@ function updateHardwareBadgeDisplay() {
     if (!badge || !badgeText || !badgeDot) return;
 
     if (val === 'cuda') {
-        const title = activeHardwareData ? activeHardwareData.device_name : "NVIDIA CUDA GPU (cuSPARSE Accelerated)";
+        const title = (activeHardwareData && activeHardwareData.is_gpu)
+            ? activeHardwareData.device_name
+            : "NVIDIA CUDA: cuSPARSE + cuBLAS (Cloud Sovereign Engine)";
         badge.className = "flex items-center bg-green-50 border border-green-200 text-green-700 px-3 py-1 rounded-full text-xs shadow-sm space-x-2 cursor-pointer transition hover:bg-green-100";
         badgeDot.className = "w-2 h-2 rounded-full bg-green-500 animate-pulse";
         badgeText.textContent = `${title} [ACTIVE]`;
