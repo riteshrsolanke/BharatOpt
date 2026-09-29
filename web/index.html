@@ -50,6 +50,7 @@
                         <a href="javascript:void(0)" onclick="loadDataset('electronics_milp')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-microchip mr-2 text-purple-500"></i> 2. MILP Electronics Plan</a>
                         <a href="javascript:void(0)" onclick="loadDataset('portfolio_qp')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-chart-line mr-2 text-green-500"></i> 3. QP Energy Portfolio</a>
                         <a href="javascript:void(0)" onclick="loadDataset('refinery_admm')" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-network-wired mr-2 text-orange-500"></i> 4. ADMM Refinery Network</a>
+                        <a href="javascript:void(0)" onclick="loadDataset('infeasible_refinery_iis')" class="flex items-center px-3 py-1.5 hover:bg-rose-50 text-rose-700 font-bold"><i class="fas fa-bug mr-2 text-rose-600"></i> 5. Infeasible Model (Visual IIS Demo)</a>
                         <div class="border-t border-gray-100 my-1"></div>
                         <a href="javascript:void(0)" onclick="exportModelJSON()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-download mr-2 text-gray-500"></i> Export Model (JSON)</a>
                         <a href="javascript:void(0)" onclick="exportModelMPS()" class="flex items-center px-3 py-1.5 hover:bg-gray-100"><i class="fas fa-file-code mr-2 text-gray-500"></i> Export MPS Formulation</a>
@@ -271,6 +272,18 @@
                                     <span class="text-[9px] bg-emerald-200 text-emerald-900 px-1 py-0.2 rounded font-mono font-bold">1M CONSTRAINTS</span>
                                 </div>
                                 <div class="text-[10px] text-emerald-700">cuSPARSE GPU (2,500 Nodes)</div>
+                            </div>
+                        </li>
+
+                        <!-- Sample 7: Infeasible Model (IIS Demo) -->
+                        <li id="file-infeasible_refinery_iis" onclick="loadDataset('infeasible_refinery_iis')" class="flex items-center space-x-2 py-1.5 px-2 rounded hover:bg-rose-50 cursor-pointer border border-rose-300 bg-rose-50/60 transition">
+                            <i class="fas fa-bug text-rose-600 text-xs"></i>
+                            <div class="flex-1 truncate">
+                                <div class="font-bold text-rose-950 flex items-center justify-between">
+                                    <span>07_infeasible_mrpl_iis</span>
+                                    <span class="text-[8.5px] bg-rose-200 text-rose-900 px-1 py-0.2 rounded font-mono font-bold">IIS DEMO</span>
+                                </div>
+                                <div class="text-[10px] text-rose-700">Time-Travel Conflict Debugger</div>
                             </div>
                         </li>
 

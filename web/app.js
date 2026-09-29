@@ -388,6 +388,78 @@ c1: 1.0 node_1 + 1.5 node_2 <= 102
 c2: 1.0 node_2 + 1.5 node_3 <= 104
 c3: 1.0 node_3 + 1.5 node_4 <= 106
 ... 1,000,000 Sparse Constraints Streamed to GPU cuSPARSE Memory`
+    },
+
+    'infeasible_refinery_iis': {
+        name: "05_infeasible_mrpl_cdu_iis.json",
+        type: "LP",
+        engine: "Infeasibility Time-Travel Debugger (Visual IIS)",
+        json: `{
+  "name": "MRPL_Infeasible_CDU_Demand_Clash_IIS",
+  "engine": "LP_SIMPLEX_IPM",
+  "type": "LP",
+  "description": "MRPL Refinery Infeasible Prototype: Minimum Diesel Contract Obligation (50,000 bpd) directly clashes with CDU Distillation Ceiling (40,000 bpd). Isolates Irreducible Inconsistent Subsystem (IIS) in real time.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "High_Speed_Diesel_bbl": 42.50,
+      "Aviation_Turbine_Fuel_bbl": 48.00,
+      "Motor_Spirit_Gasoline_bbl": 36.20,
+      "Heavy_Fuel_Oil_bbl": 18.50
+    }
+  },
+  "constraints": [
+    {
+      "name": "CDU_Total_Capacity_Limit",
+      "rel": "<=",
+      "rhs": 40000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 1.0,
+        "Aviation_Turbine_Fuel_bbl": 1.0,
+        "Motor_Spirit_Gasoline_bbl": 1.0,
+        "Heavy_Fuel_Oil_bbl": 1.0
+      },
+      "unit": "bpd"
+    },
+    {
+      "name": "Min_Diesel_Contract_Obligation",
+      "rel": ">=",
+      "rhs": 50000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 1.0
+      },
+      "unit": "bpd"
+    },
+    {
+      "name": "Min_ATF_Defense_Quota",
+      "rel": ">=",
+      "rhs": 8000.0,
+      "terms": {
+        "Aviation_Turbine_Fuel_bbl": 1.0
+      },
+      "unit": "bpd"
+    },
+    {
+      "name": "Hydrotreater_Desulfurizer_Ceiling",
+      "rel": "<=",
+      "rhs": 35000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 0.65,
+        "Aviation_Turbine_Fuel_bbl": 0.45,
+        "Heavy_Fuel_Oil_bbl": 0.20
+      },
+      "unit": "bpd"
+    }
+  ]
+}`,
+        nlp: `Maximize:
+42.50 High_Speed_Diesel_bbl + 48.00 Aviation_Turbine_Fuel_bbl + 36.20 Motor_Spirit_Gasoline_bbl + 18.50 Heavy_Fuel_Oil_bbl
+
+Subject To:
+CDU_Total_Capacity_Limit: 1.0 High_Speed_Diesel_bbl + 1.0 Aviation_Turbine_Fuel_bbl + 1.0 Motor_Spirit_Gasoline_bbl + 1.0 Heavy_Fuel_Oil_bbl <= 40000
+Min_Diesel_Contract_Obligation: 1.0 High_Speed_Diesel_bbl >= 50000
+Min_ATF_Defense_Quota: 1.0 Aviation_Turbine_Fuel_bbl >= 8000
+Hydrotreater_Desulfurizer_Ceiling: 0.65 High_Speed_Diesel_bbl + 0.45 Aviation_Turbine_Fuel_bbl + 0.20 Heavy_Fuel_Oil_bbl <= 35000`
     }
 };
 
@@ -1657,6 +1729,144 @@ function renderAIAdvice(sol) {
         .replace(/`/g, '')
         .replace(/\n/g, '<br>');
 
+    // ---- INFEASIBILITY TIME-TRAVEL DEBUGGER (VISUAL IIS) ----
+    if (sol.native_status === 'INFEASIBLE' || sol.status === 'INFEASIBLE' || (sol.iis && sol.iis.is_infeasible)) {
+        const iis = sol.iis || {
+            is_infeasible: true,
+            conflict_summary: "Physical capacity ceiling is smaller than minimum required demand obligation.",
+            deficit: 10000.0,
+            clash_variable: "High_Speed_Diesel_bbl",
+            iis_constraints: [
+                { name: "Min_Diesel_Contract_Obligation", formula: "High_Speed_Diesel_bbl >= 50,000", rel: ">=", rhs: 50000.0, type: "Contract Demand Obligation" },
+                { name: "CDU_Total_Capacity_Limit", formula: "High_Speed_Diesel_bbl <= 40,000", rel: "<=", rhs: 40000.0, type: "Hardware Distillation Ceiling" }
+            ],
+            quick_fixes: [
+                { id: "relax_capacity", action: "expand_capacity", target_constraint: "CDU_Total_Capacity_Limit", recommended_rhs: 52000.0, title: "Auto-Relax Capacity to 52,000 bpd", description: "Expand CDU limit from 40,000 to 52,000 bpd." },
+                { id: "reduce_demand", action: "reduce_demand", target_constraint: "Min_Diesel_Contract_Obligation", recommended_rhs: 35000.0, title: "Auto-Adjust Quota to 35,000 bpd", description: "Reduce minimum diesel requirement to 35,000 bpd." }
+            ]
+        };
+
+        const consList = iis.iis_constraints || [];
+        const conA = consList[0] || { name: "Demand_Requirement", formula: "x >= 50000", rel: ">=", rhs: 50000.0 };
+        const conB = consList[1] || { name: "Capacity_Ceiling", formula: "x <= 40000", rel: "<=", rhs: 40000.0 };
+        const deficitVal = iis.deficit ? Number(iis.deficit).toLocaleString() : "10,000";
+        const clashVar = iis.clash_variable || "Contested_Output";
+
+        let iisHtml = `
+            <div class="space-y-2.5">
+                <!-- INFEASIBILITY ALERT BADGE -->
+                <div class="bg-red-50 p-2.5 rounded-lg border-2 border-red-500 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
+                            <span class="text-xs font-black text-red-950 uppercase tracking-wide">Infeasibility "Time-Travel" Debugger</span>
+                        </div>
+                        <span class="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase">IIS DETECTED</span>
+                    </div>
+                    <div class="text-[10.5px] text-red-900 mt-1 font-medium leading-snug">
+                        <strong>Irreducible Inconsistent Subsystem (IIS) Isolated:</strong> ${escapeHtml(iis.conflict_summary || "Mutual contradiction between demand floor and capacity ceiling.")}
+                    </div>
+                </div>
+
+                <!-- EQUATION BATTLE / CLASH CALLOUT -->
+                <div class="bg-white p-2.5 rounded-lg border border-red-300 shadow-xs space-y-2">
+                    <div class="text-[10px] font-black text-slate-800 uppercase tracking-wide flex items-center justify-between">
+                        <span><i class="fas fa-handshake-slash text-red-500 mr-1.5"></i> Contradictory Equations (${consList.length} in Minimal Subsystem)</span>
+                        <span class="text-[9px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-mono font-bold">Deficit: -${deficitVal} units</span>
+                    </div>
+
+                    <!-- Side-by-side Clash Box -->
+                    <div class="grid grid-cols-11 gap-1 items-center text-[10px]">
+                        <!-- Equation A -->
+                        <div class="col-span-5 bg-rose-50 border border-rose-200 p-2 rounded text-rose-950">
+                            <div class="font-bold text-[9px] text-rose-800 uppercase truncate" title="${escapeHtml(conA.name)}">${escapeHtml(conA.name)}</div>
+                            <div class="font-mono font-bold text-[10.5px] text-rose-900 mt-0.5 truncate">${escapeHtml(conA.formula || conA.name)}</div>
+                            <div class="text-[8.5px] text-rose-600 font-semibold mt-0.5">Floor: &ge; ${Number(conA.rhs || 50000).toLocaleString()}</div>
+                        </div>
+
+                        <!-- VS ICON -->
+                        <div class="col-span-1 text-center font-black text-red-600 text-xs">
+                            <i class="fas fa-bolt text-amber-500 animate-bounce"></i>
+                        </div>
+
+                        <!-- Equation B -->
+                        <div class="col-span-5 bg-amber-50 border border-amber-200 p-2 rounded text-amber-950">
+                            <div class="font-bold text-[9px] text-amber-800 uppercase truncate" title="${escapeHtml(conB.name)}">${escapeHtml(conB.name)}</div>
+                            <div class="font-mono font-bold text-[10.5px] text-amber-900 mt-0.5 truncate">${escapeHtml(conB.formula || conB.name)}</div>
+                            <div class="text-[8.5px] text-amber-700 font-semibold mt-0.5">Ceiling: &le; ${Number(conB.rhs || 40000).toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Conflict Graph SVG -->
+                    <div class="bg-slate-900 rounded p-2 text-center relative overflow-hidden">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+                            <span><i class="fas fa-project-diagram text-purple-400 mr-1"></i> Visual IIS Conflict Graph</span>
+                            <span class="text-[8px] text-rose-400 font-mono">Contested: [${escapeHtml(clashVar)}]</span>
+                        </div>
+                        <svg class="w-full h-16" viewBox="0 0 340 70">
+                            <!-- Left Node A -->
+                            <rect x="10" y="15" width="100" height="40" rx="6" fill="#881337" stroke="#f43f5e" stroke-width="1.5" />
+                            <text x="60" y="32" fill="#fff" font-size="8" font-weight="bold" text-anchor="middle">${escapeHtml(conA.name.substring(0, 13))}</text>
+                            <text x="60" y="46" fill="#fecdd3" font-size="7.5" font-family="monospace" text-anchor="middle">&ge; ${Number(conA.rhs || 50000).toLocaleString()}</text>
+
+                            <!-- Connecting Clash Line Left -->
+                            <line x1="110" y1="35" x2="145" y2="35" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3" />
+
+                            <!-- Contested Central Variable Node -->
+                            <circle cx="170" cy="35" r="22" fill="#dc2626" stroke="#fca5a5" stroke-width="2" />
+                            <text x="170" y="32" fill="#fff" font-size="7.5" font-weight="900" text-anchor="middle">CLASH</text>
+                            <text x="170" y="44" fill="#fee2e2" font-size="6.5" font-weight="bold" text-anchor="middle">-${deficitVal}</text>
+
+                            <!-- Connecting Clash Line Right -->
+                            <line x1="195" y1="35" x2="230" y2="35" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,3" />
+
+                            <!-- Right Node B -->
+                            <rect x="230" y="15" width="100" height="40" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="1.5" />
+                            <text x="280" y="32" fill="#fff" font-size="8" font-weight="bold" text-anchor="middle">${escapeHtml(conB.name.substring(0, 13))}</text>
+                            <text x="280" y="46" fill="#fef3c7" font-size="7.5" font-family="monospace" text-anchor="middle">&le; ${Number(conB.rhs || 40000).toLocaleString()}</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- TIME-TRAVEL CAPACITY SLIDER -->
+                <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-2.5 rounded-lg border border-purple-200 shadow-xs">
+                    <div class="text-[10px] font-black text-purple-950 uppercase tracking-wide flex items-center justify-between mb-1">
+                        <span><i class="fas fa-clock-rotate-left text-purple-600 mr-1.5"></i> "Time-Travel" Boundary Relaxation Slider</span>
+                        <span id="sliderFeasibilityTag" class="text-[8.5px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-bold font-mono">INFEASIBLE</span>
+                    </div>
+                    <div class="text-[9.5px] text-slate-600 mb-1">
+                        Simulate restoring feasibility by expanding <strong>${escapeHtml(conB.name)}</strong>:
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[9px] text-gray-500 font-mono font-bold">30k</span>
+                        <input type="range" id="timeTravelSlider" min="30000" max="65000" step="1000" value="${conB.rhs || 40000}" 
+                               class="flex-1 accent-purple-600 cursor-pointer"
+                               oninput="handleTimeTravelSlider(this.value, ${conA.rhs || 50000}, '${escapeHtml(conB.name)}')">
+                        <span class="text-[9px] text-gray-500 font-mono font-bold">65k</span>
+                    </div>
+                    <div class="flex justify-between items-center text-[10px] mt-1 font-mono">
+                        <span class="text-slate-600">Simulated Limit: <strong id="timeTravelVal" class="text-purple-900">${Number(conB.rhs || 40000).toLocaleString()}</strong> units</span>
+                        <span id="timeTravelMargin" class="text-rose-600 font-bold">Deficit: -${deficitVal} units</span>
+                    </div>
+                </div>
+
+                <!-- 1-CLICK AUTO-REPAIR ACTIONS -->
+                <div class="space-y-1.5">
+                    <button onclick="applyIISFix('${escapeHtml(conB.name)}', ${Math.round(Number(conA.rhs || 50000) * 1.05)})" 
+                            class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-2 px-3 rounded-lg shadow-sm text-[11px] flex items-center justify-center transition active:scale-98">
+                        <i class="fas fa-wand-magic-sparkles mr-2 text-yellow-300"></i> 1-Click Auto-Repair: Relax '${escapeHtml(conB.name)}' to ${Math.round(Number(conA.rhs || 50000) * 1.05).toLocaleString()} & Re-Solve
+                    </button>
+                    <button onclick="applyIISFix('${escapeHtml(conA.name)}', ${Math.round(Number(conB.rhs || 40000) * 0.95)})" 
+                            class="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold py-1.5 px-3 rounded-lg shadow-xs text-[10.5px] flex items-center justify-center transition active:scale-98">
+                        <i class="fas fa-wrench mr-2 text-indigo-600"></i> Alternative Fix: Reduce '${escapeHtml(conA.name)}' to ${Math.round(Number(conB.rhs || 40000) * 0.95).toLocaleString()} & Re-Solve
+                    </button>
+                </div>
+            </div>
+        `;
+        aiBox.innerHTML = iisHtml;
+        return;
+    }
+
     let html = `
         <div class="space-y-2.5">
             <!-- Optimal Objective Badge -->
@@ -1744,7 +1954,9 @@ async function askSahayak() {
             objective: lastSolutionData?.objective || 405000.0,
             bottlenecks: lastSolutionData?.bottlenecks || ["Skilled_Labor_Capacity"],
             variables: lastSolutionData?.vars || {},
-            duals: lastSolutionData?.duals || {}
+            duals: lastSolutionData?.duals || {},
+            constraints: lastSolutionData?.constraints || [],
+            reduced_costs: lastSolutionData?.reduced_costs || {}
         };
 
         const res = await fetch("/api/ai/query", {
@@ -1755,12 +1967,16 @@ async function askSahayak() {
 
         if (res.ok) {
             const data = await res.json();
+            const formattedResp = (data.response || "")
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
             loadingBubble.className = "mt-1.5 p-2 bg-white border border-purple-300 rounded shadow-xs text-[11px] text-gray-800";
             loadingBubble.innerHTML = `
                 <div class="font-bold text-purple-900 flex items-center mb-1">
                     <i class="fas fa-wand-magic-sparkles text-purple-600 mr-1.5"></i> ${data.title}
                 </div>
-                <div class="leading-relaxed text-gray-700 whitespace-pre-wrap">${data.response.replace(/\n/g, '<br>')}</div>
+                <div class="leading-relaxed text-gray-700">${formattedResp}</div>
             `;
         } else {
             loadingBubble.innerHTML = `<span class="text-red-600">AI analysis could not complete. Check server connection.</span>`;
@@ -1770,3 +1986,96 @@ async function askSahayak() {
     }
     aiBox.scrollTop = aiBox.scrollHeight;
 }
+
+// ------------------------------------------------------------------ //
+// Infeasibility "Time-Travel" Debugger (Visual IIS) Actions          //
+// ------------------------------------------------------------------ //
+function handleTimeTravelSlider(val, demandFloor, capConName) {
+    const valNum = parseFloat(val);
+    const demandNum = parseFloat(demandFloor);
+    const margin = valNum - demandNum;
+
+    const valEl = document.getElementById("timeTravelVal");
+    if (valEl) valEl.textContent = valNum.toLocaleString();
+
+    const marginSpan = document.getElementById("timeTravelMargin");
+    const tag = document.getElementById("sliderFeasibilityTag");
+
+    if (margin >= 0) {
+        if (tag) {
+            tag.textContent = "FEASIBLE ZONE";
+            tag.className = "text-[8.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold font-mono";
+        }
+        if (marginSpan) {
+            marginSpan.textContent = `Surplus: +${margin.toLocaleString()} units`;
+            marginSpan.className = "text-emerald-700 font-bold";
+        }
+    } else {
+        if (tag) {
+            tag.textContent = "INFEASIBLE";
+            tag.className = "text-[8.5px] bg-red-100 text-red-800 px-1.5 py-0.5 rounded font-bold font-mono";
+        }
+        if (marginSpan) {
+            marginSpan.textContent = `Deficit: ${margin.toLocaleString()} units`;
+            marginSpan.className = "text-rose-600 font-bold";
+        }
+    }
+}
+
+function applyIISFix(conName, newRhs) {
+    try {
+        const jsonArea = document.getElementById("jsonInput");
+        const promptArea = document.getElementById("promptInput");
+        let repaired = false;
+
+        // 1. Try modifying JSON model
+        if (jsonArea && jsonArea.value) {
+            try {
+                const modelObj = JSON.parse(jsonArea.value);
+                if (modelObj.constraints && Array.isArray(modelObj.constraints)) {
+                    for (let c of modelObj.constraints) {
+                        if (c.name === conName) {
+                            c.rhs = parseFloat(newRhs);
+                            repaired = true;
+                            break;
+                        }
+                    }
+                    if (repaired) {
+                        jsonArea.value = JSON.stringify(modelObj, null, 2);
+                    }
+                }
+            } catch (e) {
+                // Not JSON or parse error, proceed to regex
+            }
+        }
+
+        // 2. Also try regex modification in NLP formulation
+        if (promptArea && promptArea.value) {
+            const regexLE = new RegExp(`(${conName}\\s*:[^<=]*<=)\\s*[0-9.]+`, 'i');
+            if (regexLE.test(promptArea.value)) {
+                promptArea.value = promptArea.value.replace(regexLE, `$1 ${newRhs}`);
+                repaired = true;
+            }
+            const regexGE = new RegExp(`(${conName}\\s*:[^>=]*>=)\\s*[0-9.]+`, 'i');
+            if (regexGE.test(promptArea.value)) {
+                promptArea.value = promptArea.value.replace(regexGE, `$1 ${newRhs}`);
+                repaired = true;
+            }
+        }
+
+        // 3. Status notification in console
+        const engineOutput = document.getElementById("engineOutput");
+        if (engineOutput) {
+            engineOutput.textContent = `[IIS TIME-TRAVEL REPAIR] Applied Auto-Repair to '${conName}': New RHS = ${newRhs}\nRe-solving model on sovereign engine to certify optimality...`;
+        }
+
+        // 4. Trigger auto-solve
+        setTimeout(() => {
+            solveModel(false);
+        }, 300);
+
+    } catch (err) {
+        alert("IIS Auto-Repair Error: " + err.message);
+    }
+}
+

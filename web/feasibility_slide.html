@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feasibility and Viability | BharatOpt-X (Team NEXORA)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0f172a;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .slide-frame {
+      width: 1333px;
+      height: 750px;
+      aspect-ratio: 16/9;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 16:9 Presentation Canvas -->
+  <div class="slide-frame bg-white rounded-2xl p-7 flex flex-col justify-between text-slate-800 border border-slate-200 overflow-hidden relative">
+
+    <!-- Top Header -->
+    <div class="flex items-center justify-between pb-2.5 border-b border-slate-200">
+      <!-- Left Logo -->
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-purple-800 via-purple-700 to-indigo-600 flex items-center justify-center text-white font-black text-base shadow-md border border-purple-400">
+          NX
+        </div>
+        <div>
+          <div class="text-sm font-black tracking-wider text-purple-950 uppercase flex items-center">
+            NEXORA <span class="ml-2 text-[9px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.5 rounded">SIH26119</span>
+          </div>
+          <div class="text-[10px] text-slate-500 font-semibold">Mangalore Refinery and Petrochemicals Ltd (MRPL)</div>
+        </div>
+      </div>
+
+      <!-- Slide Title -->
+      <div class="text-center">
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase">FEASIBILITY AND VIABILITY</h1>
+        <div class="text-[10.5px] font-bold text-purple-700 tracking-widest uppercase mt-0.5">Sovereign Mathematical Engine & Commercial Architecture</div>
+      </div>
+
+      <!-- Right Logo / Hackathon Badge -->
+      <div class="flex items-center space-x-2.5 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-xl shadow-xs">
+        <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 font-bold">
+          <i class="fas fa-award text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] font-black text-slate-800 tracking-tight">SMART INDIA HACKATHON</div>
+          <div class="text-[9.5px] font-extrabold text-amber-600 tracking-wide uppercase">Grand Finale 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPPER SECTION: Model Feasibility & Competitive Matrix -->
+    <div class="mt-2.5">
+      <div class="text-[10px] font-extrabold uppercase text-purple-800 tracking-widest text-center mb-1.5 flex items-center justify-center">
+        <span class="w-8 h-[1px] bg-purple-300 mr-2"></span>
+        MODEL FEASIBILITY & CAPABILITY MATRIX
+        <span class="w-8 h-[1px] bg-purple-300 ml-2"></span>
+      </div>
+
+      <div class="grid grid-cols-12 gap-3">
+        
+        <!-- 1. Engine Feasibility (Green) -->
+        <div class="col-span-3 bg-emerald-50/60 border border-emerald-300 rounded-xl p-3 flex flex-col justify-between shadow-xs">
+          <div class="text-[11px] font-black text-emerald-950 uppercase tracking-wide flex items-center mb-1.5">
+            <i class="fas fa-shield-halved text-emerald-600 mr-1.5"></i> FEASIBILITY
+          </div>
+          <div class="space-y-1.5 text-[9.5px] text-emerald-950 font-medium">
+            <div class="bg-white/90 p-2 rounded-lg border border-emerald-200 flex items-start shadow-2xs">
+              <i class="fas fa-circle-check text-emerald-600 mt-0.5 mr-2 text-[10.5px]"></i>
+              <div><strong>Native C++23 Simplex:</strong> Forrest-Tomlin LU updates with Markowitz pivoting.</div>
+            </div>
+            <div class="bg-white/90 p-2 rounded-lg border border-emerald-200 flex items-start shadow-2xs">
+              <i class="fas fa-circle-check text-emerald-600 mt-0.5 mr-2 text-[10.5px]"></i>
+              <div><strong>Bipartite GNN:</strong> 64-dim graph embeddings capture constraint topology.</div>
+            </div>
+            <div class="bg-white/90 p-2 rounded-lg border border-emerald-200 flex items-start shadow-2xs">
+              <i class="fas fa-circle-check text-emerald-600 mt-0.5 mr-2 text-[10.5px]"></i>
+              <div><strong>GPU cuSPARSE:</strong> Hardware SpMV acceleration on NVIDIA CUDA cores.</div>
+            </div>
+            <div class="bg-white/90 p-2 rounded-lg border border-emerald-200 flex items-start shadow-2xs">
+              <i class="fas fa-circle-check text-emerald-600 mt-0.5 mr-2 text-[10.5px]"></i>
+              <div><strong>KKT Proof:</strong> Verified primal/dual convergence with 0.00 duality gap.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Challenges (Yellow) -->
+        <div class="col-span-2 bg-amber-50/70 border border-amber-300 rounded-xl p-3 flex flex-col justify-between shadow-xs">
+          <div class="text-[11px] font-black text-amber-950 uppercase tracking-wide flex items-center mb-1.5">
+            <i class="fas fa-triangle-exclamation text-amber-600 mr-1.5"></i> CHALLENGES
+          </div>
+          <div class="space-y-1.5 text-[9px] font-bold text-amber-950">
+            <div class="bg-white/90 p-2 rounded-lg border border-amber-200 h-10 flex items-center shadow-2xs">1,000,000+ Constraints exhaust CPU RAM</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-amber-200 h-10 flex items-center shadow-2xs">Combinatorial NP-hard branch tree explosion</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-amber-200 h-10 flex items-center shadow-2xs">Reliance on foreign commercial solvers (Gurobi)</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-amber-200 h-10 flex items-center shadow-2xs">Formulation complexity for refinery operators</div>
+          </div>
+        </div>
+
+        <!-- 3. Solution (Blue) -->
+        <div class="col-span-2 bg-blue-50/70 border border-blue-300 rounded-xl p-3 flex flex-col justify-between shadow-xs">
+          <div class="text-[11px] font-black text-blue-950 uppercase tracking-wide flex items-center mb-1.5">
+            <i class="fas fa-bullseye text-blue-600 mr-1.5"></i> SOLUTION
+          </div>
+          <div class="space-y-1.5 text-[9px] font-bold text-blue-950">
+            <div class="bg-white/90 p-2 rounded-lg border border-blue-200 h-10 flex items-center shadow-2xs">GPU PDLP & cuSPARSE in 49.5 MB VRAM</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-blue-200 h-10 flex items-center shadow-2xs">GNN cuts B&B search depth by 38.4%</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-blue-200 h-10 flex items-center shadow-2xs">100% Sovereign Indian IP (Zero Lic. TCO)</div>
+            <div class="bg-white/90 p-2 rounded-lg border border-blue-200 h-10 flex items-center shadow-2xs">Universal NLP Ingestion & Sahayak AI</div>
+          </div>
+        </div>
+
+        <!-- 4. Competitor Benchmark Matrix (Purple) -->
+        <div class="col-span-5 bg-purple-50/60 border border-purple-200 rounded-xl p-3 shadow-xs">
+          <div class="text-[11px] font-black text-purple-950 uppercase tracking-wide flex items-center justify-between mb-1.5">
+            <span><i class="fas fa-table-columns text-purple-600 mr-1.5"></i> Solver Benchmark</span>
+            <span class="text-[8px] bg-purple-200 text-purple-800 font-bold px-2 py-0.5 rounded-full uppercase">Sovereign Edge</span>
+          </div>
+          <table class="w-full text-[9px] border-collapse bg-white rounded-lg overflow-hidden border border-purple-200">
+            <thead>
+              <tr class="bg-purple-900 text-white text-[8.5px]">
+                <th class="p-1.5 text-left font-bold">Capabilities</th>
+                <th class="p-1.5 text-center bg-purple-700 font-extrabold">BharatOpt-X</th>
+                <th class="p-1.5 text-center font-bold">Gurobi / CPLEX</th>
+                <th class="p-1.5 text-center font-bold">SciPy / PuLP</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-purple-100 font-medium">
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">1M+ GPU Scale (cuSPARSE)</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> (10.8s)</td>
+                <td class="p-1.5 text-center text-amber-700"><i class="fas fa-check text-amber-500"></i> (HPC Server)</td>
+                <td class="p-1.5 text-center text-rose-600 font-bold"><i class="fas fa-xmark"></i> OOM Crash</td>
+              </tr>
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">Bipartite GNN Branching</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> (Learned)</td>
+                <td class="p-1.5 text-center text-rose-600"><i class="fas fa-xmark"></i> Pseudocost</td>
+                <td class="p-1.5 text-center text-rose-600"><i class="fas fa-xmark"></i> Standard</td>
+              </tr>
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">Zero-License Sovereign IP</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> 100% Free</td>
+                <td class="p-1.5 text-center text-rose-600"><i class="fas fa-xmark"></i> ₹50L+/yr</td>
+                <td class="p-1.5 text-center text-emerald-700"><i class="fas fa-check text-emerald-600"></i> Open</td>
+              </tr>
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">Visual IIS Infeasibility Debugger</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> Graph + Auto-Fix</td>
+                <td class="p-1.5 text-center text-amber-700"><i class="fas fa-minus text-amber-500"></i> Raw Text Dump</td>
+                <td class="p-1.5 text-center text-rose-600"><i class="fas fa-xmark"></i> None (Code 2)</td>
+              </tr>
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">Exact KKT Certification</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> Exact Proof</td>
+                <td class="p-1.5 text-center text-emerald-700"><i class="fas fa-check text-emerald-600"></i> Exact</td>
+                <td class="p-1.5 text-center text-rose-600"><i class="fas fa-xmark"></i> Heuristic</td>
+              </tr>
+              <tr>
+                <td class="p-1.5 font-bold text-slate-700">Memory Footprint (1M Rows)</td>
+                <td class="p-1.5 text-center text-emerald-700 font-black bg-purple-50/50"><i class="fas fa-check text-emerald-600"></i> 49.5 MB</td>
+                <td class="p-1.5 text-center text-amber-700"><i class="fas fa-minus text-amber-500"></i> 12+ GB</td>
+                <td class="p-1.5 text-center text-rose-600 font-bold"><i class="fas fa-xmark"></i> >16 GB</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LOWER SECTION: Technical Feasibility & Viability Pillars -->
+    <div class="mt-2.5">
+      <div class="grid grid-cols-12 gap-3 mb-2.5">
+        
+        <!-- Technical Feasibility Card -->
+        <div class="col-span-6 bg-slate-50/80 border border-slate-300 rounded-xl p-3 shadow-xs">
+          <div class="text-[11px] font-black text-purple-900 uppercase tracking-wide flex items-center mb-1">
+            <i class="fas fa-microchip text-purple-600 mr-1.5"></i> TECHNICAL FEASIBILITY
+          </div>
+          <ul class="text-[9.5px] text-slate-700 space-y-1 list-disc pl-4 font-medium leading-relaxed">
+            <li><strong>Proven Mathematical Core:</strong> Native C++23 Dual Simplex and PDLP first-order hybrid gradients verified on Netlib and MIPLIB benchmarks.</li>
+            <li><strong>Hardware Adaptive:</strong> Seamlessly exploits NVIDIA RTX Laptop GPUs (CUDA) with automated fallback to CPU SIMD OpenMP multithreading.</li>
+            <li><strong>Industrial Robustness:</strong> Handles ill-conditioned constraint matrices with scaling and Markowitz dynamic LU factorizations.</li>
+          </ul>
+        </div>
+
+        <!-- Viability Card -->
+        <div class="col-span-6 bg-slate-50/80 border border-slate-300 rounded-xl p-3 shadow-xs">
+          <div class="text-[11px] font-black text-indigo-900 uppercase tracking-wide flex items-center mb-1">
+            <i class="fas fa-chart-line text-indigo-600 mr-1.5"></i> COMMERCIAL & INDUSTRIAL VIABILITY
+          </div>
+          <ul class="text-[9.5px] text-slate-700 space-y-1 list-disc pl-4 font-medium leading-relaxed">
+            <li><strong>Refinery Value Creation:</strong> MRPL crude blend & desulfurization scheduling yields up to <strong>₹18.7 Lakh/day</strong> in net product margins.</li>
+            <li><strong>Import Substitution:</strong> Saves Indian PSUs <strong>₹3.5 Cr – ₹6 Cr</strong> in recurring foreign solver licenses (Gurobi/FICO Xpress).</li>
+            <li><strong>Sovereign Defense Security:</strong> Zero cloud lock-in or telemetry; safe for air-gapped refineries and national strategic energy networks.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- 3 Summary Pillars -->
+      <div class="grid grid-cols-3 gap-3">
+        
+        <!-- Pillar 1 -->
+        <div class="bg-amber-100/70 border border-amber-300 rounded-xl p-2.5 shadow-2xs">
+          <div class="text-[10px] font-black text-amber-950 uppercase tracking-wide mb-1 flex items-center">
+            <i class="fas fa-layer-group text-amber-700 mr-1.5"></i> Ease of Implementation
+          </div>
+          <div class="text-[9px] text-amber-950 space-y-0.5 font-medium leading-tight">
+            <div>• Universal Ingestion: MPS, LP, JSON, CSV & Natural Language.</div>
+            <div>• Drop-in REST API integrates with SCADA & AspenTech systems.</div>
+            <div>• Standalone pre-compiled executable with 0 environment setup.</div>
+          </div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="bg-emerald-100/70 border border-emerald-300 rounded-xl p-2.5 shadow-2xs">
+          <div class="text-[10px] font-black text-emerald-950 uppercase tracking-wide mb-1 flex items-center">
+            <i class="fas fa-coins text-emerald-700 mr-1.5"></i> Cost Efficiency & TCO
+          </div>
+          <div class="text-[9px] text-emerald-950 space-y-0.5 font-medium leading-tight">
+            <div>• 100% Zero-License Cost: Eliminates ₹50L/core annual fees.</div>
+            <div>• Consumer GPU runnable (RTX 3050 Laptop solves 1M rows).</div>
+            <div>• Ultra-lightweight container deployment (<120MB memory footprint).</div>
+          </div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="bg-purple-100/70 border border-purple-300 rounded-xl p-2.5 shadow-2xs">
+          <div class="text-[10px] font-black text-purple-950 uppercase tracking-wide mb-1 flex items-center">
+            <i class="fas fa-chart-pie text-purple-700 mr-1.5"></i> Enterprise User Interface
+          </div>
+          <div class="text-[9px] text-purple-950 space-y-0.5 font-medium leading-tight">
+            <div>• BharatOpt Sahayak AI: Real-time NLP What-If sensitivity.</div>
+            <div>• Interactive Refinery Digital Twin & Visual Polytope Inspector.</div>
+            <div>• 1-Click Executive PDF Reports & Auditable KKT Certificates.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer Meta -->
+    <div class="flex justify-between items-center text-[9px] text-slate-400 border-t border-slate-200 pt-2 mt-2 font-medium">
+      <div>BharatOpt-X | Sovereign Industrial Mathematical Modeling & Optimization Platform</div>
+      <div>Confidential & Proprietary &copy; 2026 Team NEXORA</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

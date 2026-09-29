@@ -1,0 +1,62 @@
+{
+  "name": "MRPL_Infeasible_CDU_Demand_Clash_IIS",
+  "engine": "LP_SIMPLEX_IPM",
+  "type": "LP",
+  "description": "MRPL Infeasible Over-Constrained Model (IIS Demo): Contractual Diesel Delivery (50,000 bpd) directly clashes with CDU Distillation Ceiling (40,000 bpd). Isolates Irreducible Inconsistent Subsystem (IIS) in real time.",
+  "objective": {
+    "sense": "max",
+    "terms": {
+      "High_Speed_Diesel_bbl": 42.50,
+      "Aviation_Turbine_Fuel_bbl": 48.00,
+      "Motor_Spirit_Gasoline_bbl": 36.20,
+      "Heavy_Fuel_Oil_bbl": 18.50
+    }
+  },
+  "constraints": [
+    {
+      "name": "CDU_Total_Capacity_Limit",
+      "rel": "<=",
+      "rhs": 40000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 1.0,
+        "Aviation_Turbine_Fuel_bbl": 1.0,
+        "Motor_Spirit_Gasoline_bbl": 1.0,
+        "Heavy_Fuel_Oil_bbl": 1.0
+      },
+      "unit": "bpd",
+      "description": "Physical distillation throughput envelope."
+    },
+    {
+      "name": "Min_Diesel_Contract_Obligation",
+      "rel": ">=",
+      "rhs": 50000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 1.0
+      },
+      "unit": "bpd",
+      "description": "Mandatory PSU supply contract commitment."
+    },
+    {
+      "name": "Min_ATF_Defense_Quota",
+      "rel": ">=",
+      "rhs": 8000.0,
+      "terms": {
+        "Aviation_Turbine_Fuel_bbl": 1.0
+      },
+      "unit": "bpd",
+      "description": "National defense aviation turbine fuel allocation."
+    },
+    {
+      "name": "Hydrotreater_Desulfurizer_Ceiling",
+      "rel": "<=",
+      "rhs": 35000.0,
+      "terms": {
+        "High_Speed_Diesel_bbl": 0.65,
+        "Aviation_Turbine_Fuel_bbl": 0.45,
+        "Heavy_Fuel_Oil_bbl": 0.20
+      },
+      "unit": "bpd",
+      "description": "Desulfurization sulfur compliance envelope."
+    }
+  ]
+}
