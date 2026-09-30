@@ -18,7 +18,11 @@ import uvicorn
 
 from local_nlp_parser import parse_to_mps
 from cpp_caller import write_dat_and_run_cpp, NativeSolveResult
-from iis_detector import compute_iis
+try:
+    from iis_detector import compute_iis
+except Exception:
+    def compute_iis(*args, **kwargs):
+        return None
 
 app = FastAPI(
     title="BharatOpt-X Sovereign Optimization API",

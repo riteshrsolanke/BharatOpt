@@ -6,21 +6,18 @@ is INFEASIBLE using Elastic Phase-1 and Deletion Filtering.
 Generates interactive Time-Travel Repair actions and Conflict Graphs.
 """
 
-import numpy as np
-import scipy.optimize as opt
+try:
+    import numpy as np
+    import scipy.optimize as opt
+    HAS_SCIPY = True
+except ImportError:
+    HAS_SCIPY = False
+
 from typing import Dict, List, Any, Optional
 
 def compute_iis(obj_terms: Dict[str, float], constraints: List[Dict[str, Any]], sense: str = "max") -> Dict[str, Any]:
     """
     Computes the minimal Irreducible Inconsistent Subsystem (IIS) for an infeasible model.
-    Returns:
-      - is_infeasible: bool
-      - iis_constraints: list of minimal conflicting constraint dicts
-      - shared_variables: list of decision variables involved in the conflict
-      - conflict_summary: clear natural language explanation of the clash
-      - contradiction_details: exact formula clash
-      - quick_fixes: actionable repair options with recommended RHS adjustments
-      - graph_data: nodes and edges for rendering the Visual Conflict Graph
     """
     if not constraints:
         return {"is_infeasible": False, "iis_constraints": []}
@@ -37,6 +34,9 @@ def compute_iis(obj_terms: Dict[str, float], constraints: List[Dict[str, Any]], 
     vars_list = sorted(list(vars_set))
     n_vars = len(vars_list)
     v_idx = {v: i for i, v in enumerate(vars_list)}
+
+    if not HAS_SCIPY:
+        return _fallback_iis(constraints, vars_list)
 
     # Build matrix representation
     # Standardize all to <= : A_ub x <= b_ub
